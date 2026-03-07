@@ -1,0 +1,61 @@
+extends:
+  - recommended
+
+theme:
+  openapi:
+    htmlTemplate: ./redocly-template.html
+    theme:
+      colors:
+        primary:
+          main: '#3b82f6'
+        success:
+          main: '#10b981'
+        error:
+          main: '#ef4444'
+        warning:
+          main: '#f59e0b'
+      typography:
+        fontFamily: '"Geist", "SF Pro", -apple-system, sans-serif'
+        code:
+          fontFamily: '"JetBrains Mono", monospace'
+      sidebar:
+        backgroundColor: '#0a0e14'
+        textColor: '#c5cdd8'
+      rightPanel:
+        backgroundColor: '#111820'
+
+apis:
+  core@v1:
+    root: openapi.yaml
+
+rules:
+  no-empty-servers: off  # we generate servers dynamically
+  operation-operationId: warn
+  tag-description: warn
+
+decorators:
+  info-override:
+    title: FlowWatch API
+    description: |
+      Engine-agnostic workflow monitoring and management API.
+
+      ## Transport
+
+      This API is defined as gRPC services using Protocol Buffers and served
+      via [Connect-Go](https://connectrpc.com/docs/go/getting-started/),
+      which exposes all RPCs over:
+
+      - **gRPC** (HTTP/2, binary protobuf) — for backend service-to-service
+      - **gRPC-Web** (HTTP/1.1) — for browser clients without a proxy
+      - **Connect protocol** (HTTP/1.1, JSON or binary) — simplest for curl / fetch
+
+      Server-streaming RPCs (StreamService) are exposed as **Server-Sent Events (SSE)**
+      over HTTP when using the Connect protocol, making them consumable from
+      browsers with native `EventSource` or `fetch()`.
+
+      ## Authentication
+
+      All endpoints require a `Bearer` token in the `Authorization` header.
+      Obtain tokens from your identity provider (configurable per deployment).
+
+    version: '1.0.0'

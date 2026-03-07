@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package flowwatch.v1;
+
+option go_package = "github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1";
+
+import "flowwatch/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+// SearchService provides full-text search across runs, steps, payloads,
+// and logs with faceted filtering and a structured query language.
+service SearchService {
+  // Search executes a full-text query and returns matching results grouped by type.
+  rpc Search(SearchRequest) returns (SearchResponse) {}
+
+  // Suggest returns auto-complete suggestions for field values.
+  rpc Suggest(SuggestRequest) returns (SuggestResponse) {}
+
+  // Explain parses a raw query string into a structured AST.
+  // Used for visual ↔ raw query bidirectional conversion.
+  rpc Explain(ExplainRequest) returns (ExplainResponse) {}
+
+  // Reindex triggers re-indexing for a subset of runs (admin operation).
+  rpc Reindex(ReindexRequest) returns (ReindexResponse) {}
+
+  // GetIndexStats returns current search index health and metrics.
+  rpc GetIndexStats(GetIndexStatsRequest) returns (GetIndexStatsResponse) {}
+}
+
+// ─── Search ───
+
+enum SearchScope {
+  SEARCH_SCOPE_UNSPECIFIED = 0;
+  SEARCH_SCOPE_ALL         = 1;
+  SEARCH_SCOPE_RUNS        = 2;
+  SEARCH_SCOPE_STEPS       = 3;
+  SEARCH_SCOPE_PAYLOADS    = 4;
+  SEARCH_SCOPE_LOGS        = 5;
+}
+
+message SearchRequest {
+  string query                  = 1;  // raw query string or plain text
+  SearchScope scope             = 2;  // default ALL
+  PaginationRequest pagination  = 3;
+  TimeRange time_range          = 4;  // optional time bounds
+}
+
+enum SearchResultType {
+  SEARCH_RESULT_TYPE_UNSPECIFIED = 0;
+  SEARCH_RESULT_TYPE_RUN         = 1;
+  SEARCH_RESULT_TYPE_STEP        = 2;
+  SEARCH_RESULT_TYPE_PAYLOAD     = 3;
+  SEARCH_RESULT_TYPE_LOG         = 4;
+}
+
+message SearchResult {
+  string id                             = 1;
+  SearchResultType type                 = 2;
+  string run_id                         = 3;
+  string workflow_id                    = 4;
+  double score                          = 5;  // relevance score
+  map<string, HighlightFragments> highlights = 6;  // field → highlighted fragments
+  SearchResultContext context           = 7;
+}
+
+message HighlightFragments {
+  repeated string fragments = 1;  // HTML-safe fragments with <mark> tags
+}
+
+message SearchResultContext {
+  RunStatus run_status                 = 1;
+  string step_name                     = 2;
+  google.protobuf.Timestamp timestamp  = 3;
+  string foreign_id                    = 4;
+}
+
+message SearchFacets {
+  map<string, int32> status    = 1;  // e.g. {"FAILED": 24, "RUNNING": 3}
+  map<string, int32> workflow  = 2;
+  map<string, int32> step     = 3;
+  map<string, int32> error    = 4;  // top error codes/messages
+}
+
+message SearchResponse {
+  repeated SearchResult results   = 1;
+  SearchFacets facets             = 2;
+  PaginationResponse pagination   = 3;
+  int32 query_ms                  = 4;  // search latency for display
+}
+
+// ─── Suggest ───
+
+message SuggestRequest {
+  string field    = 1;  // e.g. "workflow", "step", "error", "status"
+  string prefix   = 2;  // partial value to match
+  int32 limit     = 3;  // max suggestions (default 10)
+}
+
+message SuggestResponse {
+  repeated Suggestion suggestions = 1;
+}
+
+message Suggestion {
+  string value    = 1;
+  int32 count     = 2;  // how many documents match this value
+}
+
+// ─── Explain ───
+
+message ExplainRequest {
+  string raw_query = 1;
+}
+
+message ExplainResponse {
+  bool valid                     = 1;
+  string error                   = 2;  // populated when valid=false
+  ParsedQuery parsed             = 3;
+  string normalized_query        = 4;  // canonical form of the query
+}
+
+message ParsedQuery {
+  string free_text                  = 1;  // text portion not bound to a field
+  repeated QueryFilter filters      = 2;
+  string sort_field                 = 3;
+  bool sort_descending              = 4;
+  TimeRange time_range              = 5;
+}
+
+message QueryFilter {
+  string field    = 1;  // e.g. "status", "workflow", "error", "payload.amount"
+  string operator = 2;  // "eq", "neq", "gt", "lt", "gte", "lte", "contains", "prefix"
+  string value    = 3;
+  bool negated    = 4;
+}
+
+// ─── Admin: Reindex ───
+
+message ReindexRequest {
+  string workflow_id  = 1;  // optional: scope to specific workflow
+  TimeRange range     = 2;  // optional: scope to time range
+}
+
+message ReindexResponse {
+  int32 runs_queued = 1;
+}
+
+// ─── Admin: Index Stats ───
+
+message GetIndexStatsRequest {}
+
+message GetIndexStatsResponse {
+  int64 indexed_runs          = 1;
+  int64 indexed_steps         = 2;
+  int64 indexed_log_lines     = 3;
+  int64 index_size_bytes      = 4;
+  int32 ingestion_lag_seconds = 5;
+  google.protobuf.Timestamp last_indexed_at = 6;
+}

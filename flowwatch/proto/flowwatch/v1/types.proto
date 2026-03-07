@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+package flowwatch.v1;
+
+option go_package = "github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+
+// ─────────────────────────────────────────────────────────────
+// Subsystems — business domain groupings
+// ─────────────────────────────────────────────────────────────
+
+// Subsystem represents a business domain grouping (e.g., onboarding,
+// order-fulfillment, billing). Workflows belong to exactly one subsystem.
+// Subsystems enable scoped dashboards, analytics, and access control.
+message Subsystem {
+  string id                            = 1;  // e.g. "order-fulfillment"
+  string name                          = 2;  // human-readable: "Order Fulfillment"
+  string description                   = 3;
+  map<string, string> metadata         = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Trace context — distributed tracing correlation
+// ─────────────────────────────────────────────────────────────
+
+// TraceContext links workflow runs to distributed traces.
+// A run always has a primary trace_id (1:1). Additionally, a run may
+// participate in multiple traces (N:1 fan-in) via additional_trace_ids.
+// One trace can span multiple runs across subsystems (1:N orchestration).
+message TraceContext {
+  string trace_id                       = 1;  // primary W3C trace ID (propagated from caller)
+  string span_id                        = 2;  // span within the trace
+  string parent_span_id                 = 3;  // parent span (if this run was triggered by another)
+  repeated string additional_trace_ids  = 4;  // for N:1 fan-in scenarios
+  string trace_source                   = 5;  // origin: "http-header", "kafka-header", "grpc-metadata", "manual"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────
+
+enum RunStatus {
+  RUN_STATUS_UNSPECIFIED = 0;
+  RUN_STATUS_PENDING     = 1;
+  RUN_STATUS_RUNNING     = 2;
+  RUN_STATUS_SUCCEEDED   = 3;
+  RUN_STATUS_FAILED      = 4;
+  RUN_STATUS_CANCELED    = 5;
+  RUN_STATUS_PAUSED      = 6;
+}
+
+enum StepStatus {
+  STEP_STATUS_UNSPECIFIED = 0;
+  STEP_STATUS_PENDING     = 1;
+  STEP_STATUS_RUNNING     = 2;
+  STEP_STATUS_SUCCEEDED   = 3;
+  STEP_STATUS_FAILED      = 4;
+  STEP_STATUS_SKIPPED     = 5;
+  STEP_STATUS_CANCELED    = 6;
+}
+
+enum GraphNodeType {
+  GRAPH_NODE_TYPE_UNSPECIFIED = 0;
+  GRAPH_NODE_TYPE_STEP        = 1;
+  GRAPH_NODE_TYPE_CONDITION   = 2;
+  GRAPH_NODE_TYPE_FORK        = 3;
+  GRAPH_NODE_TYPE_JOIN        = 4;
+  GRAPH_NODE_TYPE_SUBWORKFLOW = 5;
+}
+
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_LEVEL_DEBUG       = 1;
+  LOG_LEVEL_INFO        = 2;
+  LOG_LEVEL_WARN        = 3;
+  LOG_LEVEL_ERROR       = 4;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Core domain messages
+// ─────────────────────────────────────────────────────────────
+
+// WorkflowDefinition describes a registered workflow type.
+message WorkflowDefinition {
+  string id       = 1;  // e.g. "order-processing"
+  string name     = 2;  // human-readable label
+  string engine   = 3;  // engine identifier: "go-workflow", "luno-workflow", "temporal"
+  string version  = 4;
+  string subsystem_id                  = 5;  // business domain grouping
+  google.protobuf.Timestamp created_at = 6;
+  map<string, string> metadata         = 7;
+}
+
+// Graph represents the DAG or state-machine topology of a workflow.
+message Graph {
+  string workflow_id            = 1;
+  repeated GraphNode nodes      = 2;
+  repeated GraphEdge edges      = 3;
+}
+
+message GraphNode {
+  string id             = 1;
+  string label          = 2;
+  GraphNodeType type    = 3;
+  map<string, string> metadata = 4;
+}
+
+message GraphEdge {
+  string source_id  = 1;
+  string target_id  = 2;
+  string label      = 3;  // e.g. condition expression or transition name
+}
+
+// Run represents a single execution of a workflow.
+message Run {
+  string id                           = 1;
+  string workflow_id                  = 2;
+  string foreign_id                   = 3;  // business entity ID (order-id, user-id, etc.)
+  RunStatus status                    = 4;
+  string current_step                 = 5;
+  string subsystem_id                 = 6;  // denormalized from workflow for fast filtering
+  TraceContext trace                   = 7;  // distributed trace correlation
+  google.protobuf.Timestamp started_at   = 8;
+  google.protobuf.Timestamp finished_at  = 9;
+  google.protobuf.Duration duration      = 10;
+  ErrorDetail error                   = 11;
+  map<string, string> metadata        = 12;
+}
+
+// StepExecution captures the result of a single step within a run.
+message StepExecution {
+  string id                              = 1;
+  string run_id                          = 2;
+  string step_name                       = 3;
+  StepStatus status                      = 4;
+  int32 attempt                          = 5;  // retry attempt number (1-based)
+  google.protobuf.Timestamp started_at   = 6;
+  google.protobuf.Timestamp finished_at  = 7;
+  google.protobuf.Duration duration      = 8;
+  google.protobuf.Duration queue_wait    = 9;  // time waiting for worker slot
+  google.protobuf.Struct input           = 10;
+  google.protobuf.Struct output          = 11;
+  ErrorDetail error                      = 12;
+}
+
+message ErrorDetail {
+  string message     = 1;
+  string code        = 2;
+  string stack_trace = 3;
+}
+
+message LogEntry {
+  string run_id                        = 1;
+  string step_name                     = 2;
+  int64 line_number                    = 3;
+  google.protobuf.Timestamp timestamp  = 4;
+  LogLevel level                       = 5;
+  string message                       = 6;
+  string source                        = 7;  // stdout | stderr
+}
+
+// ─────────────────────────────────────────────────────────────
+// Pagination
+// ─────────────────────────────────────────────────────────────
+
+message PaginationRequest {
+  string cursor = 1;
+  int32 limit   = 2;  // default 20, max 100
+}
+
+message PaginationResponse {
+  string next_cursor  = 1;
+  int32 total_count   = 2;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Time range (reusable filter)
+// ─────────────────────────────────────────────────────────────
+
+message TimeRange {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to   = 2;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Capabilities — engine feature negotiation
+// ─────────────────────────────────────────────────────────────
+
+message Capabilities {
+  bool retry_run       = 1;
+  bool retry_from_step = 2;
+  bool cancel_run      = 3;
+  bool pause_run       = 4;
+  bool resume_run      = 5;
+  bool skip_step       = 6;
+  bool streaming       = 7;
+  bool analytics       = 8;
+  SearchCapabilities search = 9;
+}
+
+message SearchCapabilities {
+  bool enabled                    = 1;
+  string engine                   = 2;  // bleve | meilisearch | elasticsearch
+  repeated string scopes          = 3;  // runs, steps, payloads, logs
+  bool query_language             = 4;
+  int32 max_results               = 5;
+  bool payload_indexed            = 6;
+  bool log_indexed                = 7;
+  int32 log_retention_days        = 8;
+  int32 payload_retention_days    = 9;
+}
