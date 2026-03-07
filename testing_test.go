@@ -213,6 +213,10 @@ func (a apiImpl[Type, Status]) Callback(ctx context.Context, foreignID string, s
 	return nil
 }
 
+func (a apiImpl[Type, Status]) Retry(ctx context.Context, runID string, opts ...workflow.TriggerOption[Type, Status]) (string, error) {
+	return "", nil
+}
+
 func (a apiImpl[Type, Status]) Run(ctx context.Context) {}
 
 func (a apiImpl[Type, Status]) Stop() {}

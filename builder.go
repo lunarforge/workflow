@@ -237,7 +237,9 @@ func (b *Builder[Type, Status]) Build(
 	}
 
 	b.workflow.timeoutStore = bo.timeoutStore
+	b.workflow.stepStore = bo.stepStore
 	b.workflow.defaultOpts = bo.defaultOptions
+	b.workflow.defaultMetadata = bo.defaultMetadata
 	b.workflow.outboxConfig = bo.outboxConfig
 	b.workflow.logger.debugMode = bo.debugMode
 	b.workflow.pausedRecordsRetry = bo.autoPauseRetry
@@ -267,15 +269,17 @@ func (b *Builder[Type, Status]) Build(
 }
 
 type buildOptions struct {
-	clock          clock.Clock
-	customDelete   customDelete
-	debugMode      bool
-	defaultOptions options
-	outboxConfig   outboxConfig
-	timeoutStore   TimeoutStore
-	logger         Logger
-	autoPauseRetry pausedRecordsRetry
-	errorCounter   ErrorCounter
+	clock           clock.Clock
+	customDelete    customDelete
+	debugMode       bool
+	defaultOptions  options
+	defaultMetadata map[string]string
+	outboxConfig    outboxConfig
+	timeoutStore    TimeoutStore
+	stepStore       StepStore
+	logger          Logger
+	autoPauseRetry  pausedRecordsRetry
+	errorCounter    ErrorCounter
 }
 
 func defaultBuildOptions() buildOptions {
@@ -295,6 +299,33 @@ type BuildOption func(w *buildOptions)
 func WithTimeoutStore(s TimeoutStore) BuildOption {
 	return func(w *buildOptions) {
 		w.timeoutStore = s
+	}
+}
+
+// WithStepStore enables step execution tracking. When provided, the workflow engine records step execution
+// data (start time, duration, errors, transitions) for each step consumer invocation.
+func WithStepStore(s StepStore) BuildOption {
+	return func(w *buildOptions) {
+		w.stepStore = s
+	}
+}
+
+// WithDefaultMetadata sets metadata key-value pairs that are automatically applied to every record
+// created by this workflow. Per-trigger metadata (via WithMetadata) overrides these defaults.
+func WithDefaultMetadata(metadata map[string]string) BuildOption {
+	return func(w *buildOptions) {
+		w.defaultMetadata = metadata
+	}
+}
+
+// WithSubsystem is a convenience wrapper that sets the MetaKeySubsystem default metadata value.
+// This groups all runs of this workflow under the given subsystem for monitoring and dashboards.
+func WithSubsystem(subsystem string) BuildOption {
+	return func(w *buildOptions) {
+		if w.defaultMetadata == nil {
+			w.defaultMetadata = make(map[string]string)
+		}
+		w.defaultMetadata[MetaKeySubsystem] = subsystem
 	}
 }
 

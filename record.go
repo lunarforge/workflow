@@ -42,6 +42,11 @@ type Record struct {
 	// Meta stores any additional metadata related to the record, such as human-readable reasons for the RunState
 	// or other contextual information that can assist with debugging or auditing.
 	Meta Meta
+
+	// Metadata holds arbitrary user-defined key-value pairs associated with this record. This can be used
+	// for tagging, grouping, or attaching domain-specific context (e.g., subsystem, trace IDs, environment).
+	// Metadata is set at Trigger time via WithMetadata and persisted alongside the record.
+	Metadata map[string]string
 }
 
 // Meta provides contextual information such as the string value of the Status at the given time of the last update
@@ -74,6 +79,17 @@ type Meta struct {
 	// It provides a line trace or path that helps track where the execution was initiated,
 	// offering context for debugging or auditing purposes by capturing the origin of the workflow trigger.
 	TraceOrigin string
+
+	// TraceID is a W3C-compatible trace identifier for distributed tracing correlation.
+	// Set at Trigger time via WithTraceContext to link workflow runs to external traces.
+	TraceID string
+
+	// SpanID identifies this workflow run's span within a distributed trace.
+	SpanID string
+
+	// ParentSpanID links this run to its parent span, enabling parent-child trace relationships
+	// across workflows and services.
+	ParentSpanID string
 }
 
 // TypedRecord differs from Record in that it contains a Typed Object and Typed Status

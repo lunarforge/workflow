@@ -93,6 +93,7 @@ func consumeStepEvents[Type any, Status StatusType](
 				w.errorCounter,
 				w.newRunObj(),
 				w.releaseRun,
+				newStepTracker(w.stepStore, w.clock),
 			),
 			w.clock,
 			lag,
@@ -115,6 +116,7 @@ func stepConsumer[Type any, Status StatusType](
 	errorCounter ErrorCounter,
 	runCollector runCollector[Type, Status],
 	runReleaser runReleaser[Type, Status],
+	tracker *stepTracker,
 ) func(ctx context.Context, e *Event) error {
 	return func(ctx context.Context, e *Event) error {
 		record, err := lookupFn(ctx, e.ForeignID)
@@ -172,8 +174,13 @@ func stepConsumer[Type any, Status StatusType](
 		// Ensure the run is returned to the pool when we're done
 		defer runReleaser(run)
 
+		// Track step execution if a StepStore is configured
+		stepRec := tracker.begin(ctx, workflowName, record.ForeignID, record.RunID, int(currentStatus), currentStatus.String())
+
 		next, err := stepLogic(ctx, run)
 		if err != nil {
+			tracker.fail(ctx, stepRec, err.Error())
+
 			originalErr := err
 			paused, err := maybePause(ctx, pauseAfterErrCount, errorCounter, originalErr, processName, run, logger)
 			if err != nil {
@@ -197,6 +204,8 @@ func stepConsumer[Type any, Status StatusType](
 		}
 
 		if skipUpdate(next) {
+			tracker.skip(ctx, stepRec)
+
 			logger.Debug(ctx, "skipping update", map[string]string{
 				"description":   skipUpdateDescription(next),
 				"workflow_name": workflowName,
@@ -209,6 +218,8 @@ func stepConsumer[Type any, Status StatusType](
 			metrics.ProcessSkippedEvents.WithLabelValues(workflowName, processName, "next value specified skip").Inc()
 			return nil
 		}
+
+		tracker.succeed(ctx, stepRec, int(next))
 
 		return updater(ctx, Status(record.Status), next, run, record.Meta.Version)
 	}

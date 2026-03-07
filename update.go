@@ -45,6 +45,7 @@ func newUpdater[Type any, Status StatusType](
 			CreatedAt:    record.CreatedAt,
 			UpdatedAt:    clock.Now(),
 			Meta:         record.Meta,
+			Metadata:     record.Metadata,
 		}
 
 		latest, err := lookup(ctx, updatedRecord.RunID)

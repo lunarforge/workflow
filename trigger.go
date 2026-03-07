@@ -77,6 +77,9 @@ func trigger[Type any, Status StatusType](
 	meta := Meta{
 		StatusDescription: util.CamelCaseToSpacing(startingStatus.String()),
 		TraceOrigin:       stack.Trace(),
+		TraceID:           o.traceID,
+		SpanID:            o.spanID,
+		ParentSpanID:      o.parentSpanID,
 	}
 
 	uid, err := uuid.NewUUID()
@@ -95,6 +98,7 @@ func trigger[Type any, Status StatusType](
 		CreatedAt:    w.clock.Now(),
 		UpdatedAt:    w.clock.Now(),
 		Meta:         meta,
+		Metadata:     mergeMetadata(w.defaultMetadata, o.metadata),
 	}
 
 	err = updateRecord(ctx, store, wr, RunStateUnknown, startingStatus.String())
@@ -108,6 +112,10 @@ func trigger[Type any, Status StatusType](
 type triggerOpts[Type any, Status StatusType] struct {
 	startingPoint Status
 	initialValue  *Type
+	metadata      map[string]string
+	traceID       string
+	spanID        string
+	parentSpanID  string
 }
 
 type TriggerOption[Type any, Status StatusType] func(o *triggerOpts[Type, Status])
@@ -121,5 +129,25 @@ func WithStartingPoint[Type any, Status StatusType](startingStatus Status) Trigg
 func WithInitialValue[Type any, Status StatusType](t *Type) TriggerOption[Type, Status] {
 	return func(o *triggerOpts[Type, Status]) {
 		o.initialValue = t
+	}
+}
+
+// WithMetadata attaches arbitrary key-value pairs to the workflow record. Metadata is persisted
+// alongside the record and can be used for tagging, grouping, filtering, or attaching domain-specific
+// context such as subsystem identifiers or trace IDs.
+func WithMetadata[Type any, Status StatusType](metadata map[string]string) TriggerOption[Type, Status] {
+	return func(o *triggerOpts[Type, Status]) {
+		o.metadata = metadata
+	}
+}
+
+// WithTraceContext attaches distributed tracing identifiers to the workflow run. These are stored
+// in the record's Meta and can be used by monitoring tools like FlowWatch to correlate workflow
+// runs with external traces across services and subsystems.
+func WithTraceContext[Type any, Status StatusType](traceID, spanID, parentSpanID string) TriggerOption[Type, Status] {
+	return func(o *triggerOpts[Type, Status]) {
+		o.traceID = traceID
+		o.spanID = spanID
+		o.parentSpanID = parentSpanID
 	}
 }

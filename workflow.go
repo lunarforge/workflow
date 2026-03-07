@@ -48,6 +48,11 @@ type API[Type any, Status StatusType] interface {
 	// hands of the user.
 	Callback(ctx context.Context, foreignID string, status Status, payload io.Reader) error
 
+	// Retry creates a new workflow run for the same foreignID, re-using the Object and Metadata from
+	// the specified run. The previous run must be in a finished state (completed, cancelled, or data deleted).
+	// Returns the new run ID.
+	Retry(ctx context.Context, runID string, opts ...TriggerOption[Type, Status]) (newRunID string, err error)
+
 	// Run must be called in order to start up all the background consumers / consumers required to run the workflow. Run
 	// only needs to be called once. Any subsequent calls to run are safe and are noop.
 	Run(ctx context.Context)
@@ -69,6 +74,7 @@ type Workflow[Type any, Status StatusType] struct {
 	eventStreamer EventStreamer
 	recordStore   RecordStore
 	timeoutStore  TimeoutStore
+	stepStore     StepStore
 	scheduler     RoleScheduler
 
 	consumers        map[Status]consumerConfig[Type, Status]
@@ -77,6 +83,7 @@ type Workflow[Type any, Status StatusType] struct {
 	connectorConfigs []*connectorConfig[Type, Status]
 
 	defaultOpts         options
+	defaultMetadata     map[string]string
 	outboxConfig        outboxConfig
 	pausedRecordsRetry  pausedRecordsRetry
 	customDelete        customDelete

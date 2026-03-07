@@ -292,6 +292,7 @@ func timeoutAutoInserterConsumer[Type any, Status StatusType](
 				w.errorCounter,
 				w.newRunObj(),
 				w.releaseRun,
+				nil, // timeout auto-inserter does not track step executions
 			),
 			w.clock,
 			0,

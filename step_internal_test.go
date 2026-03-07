@@ -92,6 +92,7 @@ func Test_stepConsumer(t *testing.T) {
 			w.errorCounter,
 			func() *Run[string, testStatus] { return &Run[string, testStatus]{} },
 			func(*Run[string, testStatus]) {},
+			nil,
 		)(ctx, &Event{})
 		require.NoError(t, err)
 
@@ -145,6 +146,7 @@ func Test_stepConsumer(t *testing.T) {
 			w.errorCounter,
 			func() *Run[string, testStatus] { return &Run[string, testStatus]{} },
 			func(*Run[string, testStatus]) {},
+			nil,
 		)(ctx, &Event{})
 		require.NoError(t, err)
 
@@ -196,6 +198,7 @@ func Test_stepConsumer(t *testing.T) {
 			w.errorCounter,
 			func() *Run[string, testStatus] { return &Run[string, testStatus]{} },
 			func(*Run[string, testStatus]) {},
+			nil,
 		)(ctx, &Event{})
 		require.NoError(t, err)
 
@@ -249,6 +252,7 @@ func Test_stepConsumer(t *testing.T) {
 			w.errorCounter,
 			func() *Run[string, testStatus] { return &Run[string, testStatus]{} },
 			func(*Run[string, testStatus]) {},
+			nil,
 		)
 		require.NoError(t, err)
 
