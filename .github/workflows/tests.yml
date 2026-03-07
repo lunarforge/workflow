@@ -80,3 +80,42 @@ jobs:
           cd ./adapters/wredis
           echo "🚀 Testing Redis adapter with testcontainers..."
           go test -v -timeout=10m ./...
+
+      - name: Test PostgreSQL Adapter with Testcontainers
+        run: |
+          cd ./adapters/pgstore
+          echo "🚀 Testing PostgreSQL adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+      - name: Test NATS Adapter with Testcontainers
+        run: |
+          cd ./adapters/natsstreamer
+          echo "🚀 Testing NATS adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+  flowwatch:
+    name: FlowWatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Vet
+        run: cd flowwatch && go vet ./...
+
+      - name: Test
+        run: cd flowwatch && go test -v -race -timeout=5m ./...
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install UI dependencies
+        run: cd flowwatch/ui && bun install --frozen-lockfile
+
+      - name: Build UI
+        run: cd flowwatch/ui && bun run build
