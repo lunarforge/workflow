@@ -10,7 +10,6 @@ import (
 )
 
 // workflowServer implements WorkflowServiceHandler by delegating to the EngineAdapter.
-// Methods will be wired up in Phase 4.
 type workflowServer struct {
 	flowwatchv1connect.UnimplementedWorkflowServiceHandler
 	adapter adapter.EngineAdapter
