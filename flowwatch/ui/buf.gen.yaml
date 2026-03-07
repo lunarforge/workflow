@@ -1,0 +1,10 @@
+version: v2
+plugins:
+  - remote: buf.build/bufbuild/es:v2.2.3
+    out: src/gen
+    opt: target=ts
+  - remote: buf.build/connectrpc/es:v1.6.1
+    out: src/gen
+    opt: target=ts
+inputs:
+  - directory: ../proto
