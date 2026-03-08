@@ -9,3 +9,12 @@
 
 # Output of go coverage
 *.out
+
+# Compiled binaries
+_examples/flowwatch/flowwatch-demo
+flowwatch/flowwatch
+flowwatch/bin/
+
+# Archives
+*.zip
+*.tar.gz
