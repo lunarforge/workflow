@@ -24,12 +24,15 @@ import (
 
 	connectcors "connectrpc.com/cors"
 	"github.com/rs/cors"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/luno/workflow"
 	"github.com/luno/workflow/adapters/memrecordstore"
 	"github.com/luno/workflow/adapters/memrolescheduler"
+	"github.com/luno/workflow/adapters/memstepstore"
 	"github.com/luno/workflow/adapters/memstreamer"
 	"github.com/luno/workflow/adapters/memtimeoutstore"
 
@@ -37,20 +40,25 @@ import (
 )
 
 func main() {
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	log.Logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen}).
+		With().Timestamp().Logger()
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	// --- Workflow infrastructure ---
 	recordStore := memrecordstore.New()
 	streamer := memstreamer.New()
+	stepStore := memstepstore.New()
 
 	paymentSvc := &MockPaymentService{}
 	inventorySvc := &MockInventoryService{}
 	shippingSvc := &MockShippingService{}
 
-	wf := buildWorkflow(streamer, recordStore, paymentSvc, inventorySvc, shippingSvc)
-	onboardingWf := buildOnboardingWorkflow(streamer, recordStore)
-	refundWf := buildRefundWorkflow(streamer, recordStore)
+	wf := buildWorkflow(streamer, recordStore, stepStore, paymentSvc, inventorySvc, shippingSvc)
+	onboardingWf := buildOnboardingWorkflow(streamer, recordStore, stepStore)
+	refundWf := buildRefundWorkflow(streamer, recordStore, stepStore)
 
 	wf.Run(ctx)
 	defer wf.Stop()
@@ -60,10 +68,10 @@ func main() {
 	defer refundWf.Stop()
 
 	// --- FlowWatch adapter ---
-	adapter := flowwatch.NewAdapter(recordStore, nil)
-	flowwatch.RegisterWorkflow(adapter, wf)
-	flowwatch.RegisterWorkflow(adapter, onboardingWf)
-	flowwatch.RegisterWorkflow(adapter, refundWf)
+	adapter := flowwatch.NewAdapter(recordStore, stepStore)
+	flowwatch.RegisterWorkflow(adapter, wf, flowwatch.WithSubsystem("order-fulfillment"))
+	flowwatch.RegisterWorkflow(adapter, onboardingWf, flowwatch.WithSubsystem("identity"))
+	flowwatch.RegisterWorkflow(adapter, refundWf, flowwatch.WithSubsystem("billing"))
 
 	// --- FlowWatch API server ---
 	mux := http.NewServeMux()
@@ -111,6 +119,7 @@ func main() {
 func buildWorkflow(
 	streamer *memstreamer.StreamConstructor,
 	recordStore *memrecordstore.Store,
+	stepStore *memstepstore.Store,
 	ps *MockPaymentService,
 	is *MockInventoryService,
 	ss *MockShippingService,
@@ -140,6 +149,7 @@ func buildWorkflow(
 		recordStore,
 		memrolescheduler.New(),
 		workflow.WithTimeoutStore(memtimeoutstore.New()),
+		workflow.WithStepStore(stepStore),
 	)
 }
 

@@ -77,6 +77,7 @@ type RefundRequest struct {
 func buildRefundWorkflow(
 	streamer *memstreamer.StreamConstructor,
 	recordStore *memrecordstore.Store,
+	stepStore workflow.StepStore,
 ) *workflow.Workflow[RefundRequest, RefundStatus] {
 	b := workflow.NewBuilder[RefundRequest, RefundStatus]("refund-process")
 
@@ -94,6 +95,7 @@ func buildRefundWorkflow(
 		streamer,
 		recordStore,
 		memrolescheduler.New(),
+		workflow.WithStepStore(stepStore),
 	)
 }
 

@@ -5,12 +5,25 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/luno/workflow"
 
 	"github.com/luno/workflow/flowwatch/internal/adapter"
 )
+
+// humanize converts a kebab-case ID like "order-fulfillment" to "Order Fulfillment".
+func humanize(s string) string {
+	words := strings.FieldsFunc(s, func(r rune) bool { return r == '-' || r == '_' })
+	for i, w := range words {
+		if len(w) > 0 {
+			words[i] = string(unicode.ToUpper(rune(w[0]))) + w[1:]
+		}
+	}
+	return strings.Join(words, " ")
+}
 
 // RetryFunc retries a finished workflow run, returning the new run ID.
 type RetryFunc func(ctx context.Context, runID string) (string, error)
@@ -27,7 +40,8 @@ type WorkflowRegistration struct {
 
 // RegisterWorkflow is a generic helper that extracts graph info and status labels from a
 // typed Workflow instance and registers it with the adapter.
-func RegisterWorkflow[Type any, Status workflow.StatusType](a *Adapter, wf *workflow.Workflow[Type, Status]) {
+// Optional functional options can be passed to set additional fields like Subsystem.
+func RegisterWorkflow[Type any, Status workflow.StatusType](a *Adapter, wf *workflow.Workflow[Type, Status], opts ...func(*WorkflowRegistration)) {
 	info := wf.GraphInfo()
 	labels := make(map[int]string)
 
@@ -35,14 +49,18 @@ func RegisterWorkflow[Type any, Status workflow.StatusType](a *Adapter, wf *work
 		labels[n] = Status(n).String()
 	}
 
-	a.Register(WorkflowRegistration{
+	reg := WorkflowRegistration{
 		Name:      wf.Name(),
 		GraphInfo: info,
 		Labels:    labels,
 		RetryFn: func(ctx context.Context, runID string) (string, error) {
 			return wf.Retry(ctx, runID)
 		},
-	})
+	}
+	for _, opt := range opts {
+		opt(&reg)
+	}
+	a.Register(reg)
 }
 
 // New creates a new Adapter backed by the given record store and optional step store.
@@ -110,7 +128,7 @@ func (a *Adapter) ListSubsystems(ctx context.Context) ([]adapter.SubsystemSummar
 			s = &adapter.SubsystemSummary{
 				Subsystem: adapter.SubsystemData{
 					ID:   sub,
-					Name: sub,
+					Name: humanize(sub),
 				},
 			}
 			subs[sub] = s
@@ -149,7 +167,7 @@ func (a *Adapter) GetSubsystem(ctx context.Context, subsystemID string) (*adapte
 		Summary: adapter.SubsystemSummary{
 			Subsystem: adapter.SubsystemData{
 				ID:   subsystemID,
-				Name: subsystemID,
+				Name: humanize(subsystemID),
 			},
 			WorkflowCount: len(workflows),
 		},
@@ -451,27 +469,8 @@ func (a *Adapter) SubscribeRun(_ context.Context, _ string) (<-chan adapter.RunD
 	return nil, fmt.Errorf("streaming not yet implemented")
 }
 
-// --- Analytics (basic implementations) ---
-
-func (a *Adapter) GetThroughput(_ context.Context, _ adapter.AnalyticsParams) ([]adapter.ThroughputPoint, error) {
-	return nil, fmt.Errorf("analytics not yet implemented")
-}
-
-func (a *Adapter) GetLatency(_ context.Context, _ adapter.AnalyticsParams) ([]adapter.LatencyPoint, error) {
-	return nil, fmt.Errorf("analytics not yet implemented")
-}
-
-func (a *Adapter) GetFailureRate(_ context.Context, _ adapter.AnalyticsParams) ([]adapter.FailureRatePoint, error) {
-	return nil, fmt.Errorf("analytics not yet implemented")
-}
-
-func (a *Adapter) GetStepDuration(_ context.Context, _ adapter.StepDurationParams) (*adapter.StepDurationReport, error) {
-	return nil, fmt.Errorf("analytics not yet implemented")
-}
-
-func (a *Adapter) GetStepHeatmap(_ context.Context, _ adapter.AnalyticsParams) ([]adapter.HeatmapPoint, error) {
-	return nil, fmt.Errorf("analytics not yet implemented")
-}
+// --- Analytics ---
+// Implemented in analytics.go
 
 // --- helpers ---
 

@@ -68,6 +68,7 @@ type UserOnboarding struct {
 func buildOnboardingWorkflow(
 	streamer *memstreamer.StreamConstructor,
 	recordStore *memrecordstore.Store,
+	stepStore workflow.StepStore,
 ) *workflow.Workflow[UserOnboarding, OnboardingStatus] {
 	b := workflow.NewBuilder[UserOnboarding, OnboardingStatus]("user-onboarding")
 
@@ -83,6 +84,7 @@ func buildOnboardingWorkflow(
 		streamer,
 		recordStore,
 		memrolescheduler.New(),
+		workflow.WithStepStore(stepStore),
 	)
 }
 

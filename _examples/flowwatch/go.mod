@@ -12,6 +12,7 @@ require (
 	github.com/luno/workflow v0.0.0
 	github.com/luno/workflow/flowwatch v0.0.0
 	github.com/rs/cors v1.11.1
+	github.com/rs/zerolog v1.33.0
 	golang.org/x/net v0.34.0
 )
 
@@ -29,7 +30,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
