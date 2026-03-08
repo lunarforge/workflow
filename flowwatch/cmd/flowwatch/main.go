@@ -21,7 +21,8 @@ import (
 
 func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	log.Logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen}).
+		With().Timestamp().Logger()
 
 	addr := envOr("FLOWWATCH_ADDR", ":8090")
 
