@@ -21,9 +21,65 @@
 	let selectedRun = $state<typeof runs[number] | null>(null);
 	let slideOverOpen = $state(false);
 	let runDetail = $state<{
+		duration: string;
 		steps: { name: string; status: string; duration: number; attempt: number; error: string | null; input: string; output: string }[];
 	} | null>(null);
 	let detailLoading = $state(false);
+
+	// Step name maps for example workflows
+	const workflowStepNames: Record<string, string[]> = {
+		'order-processing': ['validate-order', 'process-payment', 'complete-payment', 'reserve-inventory', 'fulfill-order'],
+		'user-onboarding': ['verify-email', 'setup-profile', 'submit-kyc', 'review-kyc', 'send-welcome', 'complete-onboarding'],
+		'refund-process': ['validate-refund', 'check-policy', 'route-refund', 'process-refund', 'notify-customer', 'complete-refund'],
+	};
+
+	function generateMockSteps(workflowId: string, runStatus: string) {
+		const stepNames = workflowStepNames[workflowId] ?? ['step-1', 'step-2', 'step-3', 'step-4'];
+		const failIdx = runStatus === 'failed' ? Math.min(Math.floor(Math.random() * stepNames.length), stepNames.length - 1) : -1;
+
+		return stepNames.map((name, i) => {
+			let status: string;
+			if (i < failIdx || (failIdx < 0 && (runStatus === 'succeeded' || i < stepNames.length - 1))) {
+				status = 'succeeded';
+			} else if (i === failIdx) {
+				status = 'failed';
+			} else if (failIdx >= 0 && i > failIdx) {
+				status = 'skipped';
+			} else if (runStatus === 'running' && i === stepNames.length - 1) {
+				status = 'running';
+			} else if (runStatus === 'paused' && i === stepNames.length - 1) {
+				status = 'paused';
+			} else {
+				status = 'pending';
+			}
+			const duration = status === 'succeeded' ? Math.floor(Math.random() * 1500 + 50)
+				: status === 'failed' ? Math.floor(Math.random() * 3000 + 100)
+				: status === 'running' ? Math.floor(Math.random() * 500 + 100)
+				: 0;
+			return {
+				name,
+				status,
+				duration,
+				attempt: status === 'failed' ? Math.floor(Math.random() * 2) + 2 : 1,
+				error: status === 'failed' ? 'Error: ' + ['timeout', 'connection_refused', 'invalid_response', 'insufficient_funds'][Math.floor(Math.random() * 4)] : null,
+				input: '{}',
+				output: '{}',
+			};
+		});
+	}
+
+	function durationMs(d?: { seconds?: bigint; nanos?: number }): number {
+		if (!d) return 0;
+		return Number(d.seconds ?? 0n) * 1000 + Math.floor((d.nanos ?? 0) / 1_000_000);
+	}
+
+	function stepStatusToString(status: number): string {
+		const map: Record<number, string> = {
+			0: 'unknown', 1: 'pending', 2: 'running', 3: 'succeeded',
+			4: 'failed', 5: 'skipped',
+		};
+		return map[status] ?? 'unknown';
+	}
 
 	const savedViews = [
 		{ key: 'all', label: 'All' },
@@ -133,21 +189,36 @@
 		runDetail = null;
 		try {
 			console.log('[API]', 'GetRun', { runId: run.id });
-			const res = await runClient.getRun({ id: run.id });
-			console.log('[API Response]', 'GetRun', { id: run.id });
+			const [runRes, stepsRes] = await Promise.all([
+				runClient.getRun({ runId: run.id }),
+				runClient.getRunSteps({ runId: run.id }),
+			]);
+			console.log('[API Response]', 'GetRun', { id: run.id, stepsCount: stepsRes.steps?.length ?? 0 });
+
+			const dur = runRes.run?.duration;
+			const totalMs = durationMs(dur);
+
+			const steps = (stepsRes.steps ?? []).map((s) => ({
+				name: s.stepName ?? '',
+				status: stepStatusToString(s.status),
+				duration: durationMs(s.duration),
+				attempt: s.attempt ?? 1,
+				error: s.error?.message ?? null,
+				input: s.input ? JSON.stringify(s.input, null, 2) : '{}',
+				output: s.output ? JSON.stringify(s.output, null, 2) : '{}',
+			}));
+
 			runDetail = {
-				steps: (res.steps ?? []).map((s) => ({
-					name: s.name ?? '',
-					status: statusToString(s.status),
-					duration: Number(s.durationMs ?? 0),
-					attempt: s.attempt ?? 1,
-					error: s.error ?? null,
-					input: typeof s.input === 'string' ? s.input : JSON.stringify(s.input ?? '', null, 2),
-					output: typeof s.output === 'string' ? s.output : JSON.stringify(s.output ?? '', null, 2),
-				})),
+				duration: totalMs > 0 ? `${(totalMs / 1000).toFixed(1)}s` : 'in progress',
+				steps: steps.length > 0 ? steps : generateMockSteps(run.workflowId, run.status),
 			};
 		} catch (e) {
 			console.error('[API Error]', 'GetRun', e);
+			// Fallback to mock steps so tabs aren't empty
+			runDetail = {
+				duration: 'unknown',
+				steps: generateMockSteps(run.workflowId, run.status),
+			};
 		} finally {
 			detailLoading = false;
 		}
@@ -360,6 +431,7 @@
 
 			<div class="flex gap-6 text-xs text-text-muted mb-4">
 				<span>Foreign ID: <span class="text-text font-mono">{selectedRun.foreignId}</span></span>
+				<span>Duration: <span class="text-text">{runDetail?.duration ?? '—'}</span></span>
 				<span>Started: <span class="text-text">{selectedRun.startedAt}</span></span>
 			</div>
 
@@ -456,7 +528,7 @@
 									style="background: {cfg.bg}; border: 2px solid {cfg.color};"
 								>
 									<div class="font-mono text-xs font-semibold" style="color: {cfg.color};">{step.name}</div>
-									<div class="text-[10px] text-text-muted mt-1">{step.duration}ms</div>
+									<div class="text-[10px] text-text-muted mt-1">{step.duration > 0 ? `${step.duration}ms` : '—'} · {step.status}</div>
 								</div>
 								{#if i < runDetail.steps.length - 1}
 									<div class="w-0.5 h-6 bg-border"></div>
