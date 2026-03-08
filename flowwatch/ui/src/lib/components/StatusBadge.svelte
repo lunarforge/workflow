@@ -1,18 +1,22 @@
 <script lang="ts">
-	let { status }: { status: string } = $props();
+	let { status, size = 'sm' }: { status: string; size?: 'sm' | 'md' } = $props();
 
-	const colors: Record<string, string> = {
-		running: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-		succeeded: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-		failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-		canceled: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-		paused: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-		pending: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+	const config: Record<string, { icon: string; label: string; color: string; bg: string; border: string }> = {
+		running: { icon: '◉', label: 'Running', color: 'text-running', bg: 'bg-running-bg', border: 'border-running/20' },
+		succeeded: { icon: '✓', label: 'Succeeded', color: 'text-succeeded', bg: 'bg-succeeded-bg', border: 'border-succeeded/20' },
+		failed: { icon: '✗', label: 'Failed', color: 'text-failed', bg: 'bg-failed-bg', border: 'border-failed/20' },
+		paused: { icon: '⏸', label: 'Paused', color: 'text-paused', bg: 'bg-paused-bg', border: 'border-paused/20' },
+		pending: { icon: '○', label: 'Pending', color: 'text-pending', bg: 'bg-bg', border: 'border-pending/20' },
+		canceled: { icon: '⊘', label: 'Canceled', color: 'text-canceled', bg: 'bg-bg', border: 'border-canceled/20' },
+		skipped: { icon: '—', label: 'Skipped', color: 'text-text-muted', bg: 'bg-bg', border: 'border-text-muted/20' },
+		unknown: { icon: '?', label: 'Unknown', color: 'text-text-muted', bg: 'bg-bg', border: 'border-text-muted/20' },
 	};
 
-	const colorClass = $derived(colors[status] ?? colors.pending);
+	const cfg = $derived(config[status] ?? config.unknown);
+	const sz = $derived(size === 'sm' ? 'px-1.5 py-0.5 text-[11px]' : 'px-2 py-1 text-[13px]');
 </script>
 
-<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {colorClass}">
-	{status}
+<span class="inline-flex items-center gap-1 font-mono font-semibold uppercase tracking-wider rounded border {sz} {cfg.color} {cfg.bg} {cfg.border}">
+	<span class={size === 'sm' ? 'text-[10px]' : 'text-[13px]'}>{cfg.icon}</span>
+	{cfg.label}
 </span>

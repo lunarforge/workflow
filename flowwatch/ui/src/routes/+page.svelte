@@ -5,23 +5,27 @@
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 
 	let workflows = $state<{ id: string; name: string; subsystemId: string }[]>([]);
-	let recentRuns = $state<{ id: string; workflowId: string; foreignId: string; status: string; currentStep: string }[]>([]);
+	let recentRuns = $state<{ id: string; workflowId: string; foreignId: string; status: string; currentStep: string; startedAt: string }[]>([]);
+	let subsystems = $state<{
+		id: string; name: string; activeRuns: number; failedLastHour: number; errorRate: number; workflowCount: number;
+	}[]>([]);
 	let capabilities = $state<{ retryRun: boolean; pauseRun: boolean; cancelRun: boolean } | null>(null);
 	let loading = $state(true);
 	let error = $state('');
 
 	onMount(async () => {
 		try {
-			const [wfRes, capsRes, runsRes] = await Promise.all([
+			console.log('[API]', 'Dashboard', 'loading all data');
+			const [wfRes, capsRes, runsRes, ssRes] = await Promise.all([
 				workflowClient.listWorkflows({}),
 				workflowClient.getCapabilities({}),
-				runClient.listRuns({ pagination: { limit: 10 } }),
+				runClient.listRuns({ pagination: { limit: 15 } }),
+				workflowClient.listSubsystems({}),
 			]);
+			console.log('[API Response]', 'Dashboard', 'all requests complete');
 
 			workflows = (wfRes.workflows ?? []).map((w) => ({
-				id: w.id,
-				name: w.name,
-				subsystemId: w.subsystemId,
+				id: w.id, name: w.name, subsystemId: w.subsystemId,
 			}));
 
 			capabilities = {
@@ -36,12 +40,20 @@
 				foreignId: r.foreignId,
 				status: statusToString(r.status),
 				currentStep: r.currentStep,
+				startedAt: r.startedAt ? new Date(Number(r.startedAt.seconds) * 1000).toLocaleString() : '',
 			}));
 
-			console.log('[API]', 'Dashboard loaded', { workflows: workflows.length, runs: recentRuns.length });
+			subsystems = (ssRes.subsystems ?? []).map((s) => ({
+				id: s.subsystem?.id ?? '',
+				name: s.subsystem?.name ?? s.subsystem?.id ?? '',
+				activeRuns: s.activeRuns,
+				failedLastHour: s.failedLastHour,
+				errorRate: s.errorRateLastHour,
+				workflowCount: s.workflowCount,
+			}));
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load dashboard';
 			console.error('[API Error]', 'Dashboard', e);
+			error = e instanceof Error ? e.message : 'Failed to load dashboard';
 		} finally {
 			loading = false;
 		}
@@ -54,79 +66,152 @@
 		};
 		return map[status] ?? 'unknown';
 	}
+
+	function healthStatus(failed: number) {
+		if (failed > 3) return { label: 'Degraded', color: 'text-failed' };
+		if (failed > 0) return { label: 'Warning', color: 'text-paused' };
+		return { label: 'Healthy', color: 'text-succeeded' };
+	}
+
+	const statusIcon: Record<string, string> = {
+		running: '◉', succeeded: '✓', failed: '✗', paused: '⏸', canceled: '⊘', pending: '○',
+	};
+
+	const runningCount = $derived(recentRuns.filter((r) => r.status === 'running').length);
+	const succeededCount = $derived(recentRuns.filter((r) => r.status === 'succeeded').length);
+	const failedCount = $derived(recentRuns.filter((r) => r.status === 'failed').length);
+	const pausedCount = $derived(recentRuns.filter((r) => r.status === 'paused').length);
+
+	const alerts = $derived.by(() => {
+		const a: { level: 'warning' | 'error'; message: string; href: string }[] = [];
+		for (const ss of subsystems) {
+			if (ss.failedLastHour > 3) {
+				a.push({ level: 'error', message: `${ss.name}: ${ss.failedLastHour} failures in last hour`, href: `/runs?subsystem=${ss.id}` });
+			} else if (ss.failedLastHour > 0) {
+				a.push({ level: 'warning', message: `${ss.name}: ${ss.failedLastHour} failure${ss.failedLastHour > 1 ? 's' : ''} in last hour`, href: `/runs?subsystem=${ss.id}` });
+			}
+			if (ss.errorRate > 0.1) {
+				a.push({ level: 'error', message: `${ss.name}: error rate ${(ss.errorRate * 100).toFixed(1)}%`, href: `/subsystems/${ss.id}` });
+			}
+		}
+		return a;
+	});
 </script>
 
 <svelte:head>
 	<title>FlowWatch - Dashboard</title>
 </svelte:head>
 
-<h2 class="text-xl font-semibold mb-4">Dashboard</h2>
-
 {#if loading}
-	<p class="text-muted">Loading...</p>
+	<p class="text-text-muted text-center py-12">Loading...</p>
 {:else if error}
-	<div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-lg">
-		{error}
-	</div>
+	<div class="bg-failed-bg border border-failed/20 text-failed p-4 rounded-lg">{error}</div>
 {:else}
-	<!-- Stats -->
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-		<StatCard label="Workflows" value={workflows.length} />
-		<StatCard label="Recent Runs" value={recentRuns.length} />
-		<StatCard
-			label="Running"
-			value={recentRuns.filter((r) => r.status === 'running').length}
-			color="text-blue-600 dark:text-blue-400"
-		/>
-		<StatCard
-			label="Failed"
-			value={recentRuns.filter((r) => r.status === 'failed').length}
-			color="text-red-600 dark:text-red-400"
-		/>
+	<!-- Summary stat cards -->
+	<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+		<a href="/runs?status=running"><StatCard label="Running" value={runningCount} accentColor="border-b-running" /></a>
+		<a href="/runs?status=succeeded"><StatCard label="Succeeded" value={succeededCount} accentColor="border-b-succeeded" /></a>
+		<a href="/runs?status=failed"><StatCard label="Failed" value={failedCount} accentColor="border-b-failed" /></a>
+		<a href="/runs?status=paused"><StatCard label="Paused" value={pausedCount} accentColor="border-b-paused" /></a>
+		<StatCard label="Workflows" value={workflows.length} accentColor="border-b-accent" />
 	</div>
 
-	<!-- Capabilities -->
-	{#if capabilities}
-		<div class="mb-6 text-sm text-muted">
-			Engine capabilities:
-			{#if capabilities.retryRun}<span class="mr-2">Retry</span>{/if}
-			{#if capabilities.pauseRun}<span class="mr-2">Pause</span>{/if}
-			{#if capabilities.cancelRun}<span class="mr-2">Cancel</span>{/if}
+	<!-- Live run ticker + Alert feed -->
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+		<!-- Live Run Ticker -->
+		<div class="lg:col-span-2 bg-surface border border-border rounded-lg overflow-hidden">
+			<div class="px-4 py-3 border-b border-border flex items-center justify-between">
+				<div class="flex items-center gap-2">
+					<span class="w-2 h-2 rounded-full bg-succeeded animate-pulse-dot"></span>
+					<span class="text-[11px] font-bold text-text-muted uppercase tracking-[1px]">Live Feed</span>
+				</div>
+				<a href="/runs" class="text-[11px] text-text-muted hover:text-accent transition-colors">View All</a>
+			</div>
+			<div class="max-h-72 overflow-auto">
+				{#each recentRuns.slice(0, 8) as run, i}
+					<a
+						href="/runs/{run.id}"
+						class="grid items-center gap-2 px-4 py-2.5 border-b border-border-subtle hover:bg-surface-hover transition-colors {i === 0 ? 'animate-slide-in bg-accent/[0.03]' : ''}"
+						style="grid-template-columns: 24px 1fr 140px 80px 90px;"
+					>
+						<span class="text-sm {run.status === 'running' ? 'text-running' : run.status === 'succeeded' ? 'text-succeeded' : run.status === 'failed' ? 'text-failed' : run.status === 'paused' ? 'text-paused' : 'text-text-muted'}">{statusIcon[run.status] ?? '○'}</span>
+						<span class="font-mono text-xs text-text-muted truncate">{run.id.slice(0, 8)}</span>
+						<span class="text-xs text-text font-medium truncate">{run.workflowId}</span>
+						<span class="text-[11px] text-text-muted truncate">{run.currentStep || '-'}</span>
+						<span class="text-[11px] text-text-muted text-right">{run.startedAt}</span>
+					</a>
+				{:else}
+					<p class="px-4 py-8 text-sm text-center text-text-muted">No recent runs</p>
+				{/each}
+			</div>
+		</div>
+
+		<!-- Alert Feed -->
+		<div class="bg-surface border border-border rounded-lg overflow-hidden">
+			<div class="px-4 py-3 border-b border-border">
+				<span class="text-[11px] font-bold text-text-muted uppercase tracking-[1px]">Alert Feed</span>
+			</div>
+			<div class="max-h-72 overflow-auto">
+				{#each alerts as alert}
+					<a href={alert.href} class="flex items-start gap-2.5 px-4 py-3 border-b border-border-subtle hover:bg-surface-hover transition-colors">
+						<span class="text-xs mt-0.5 {alert.level === 'error' ? 'text-failed' : 'text-paused'}">{alert.level === 'error' ? '✗' : '⚠'}</span>
+						<div class="flex-1">
+							<p class="text-xs {alert.level === 'error' ? 'text-failed' : 'text-paused'}">{alert.message}</p>
+							<span class="text-[10px] text-accent mt-0.5">View details</span>
+						</div>
+					</a>
+				{:else}
+					<p class="px-4 py-8 text-sm text-center text-text-muted">No active alerts</p>
+				{/each}
+			</div>
+		</div>
+	</div>
+
+	<!-- Subsystem Health Cards -->
+	{#if subsystems.length > 0}
+		<div class="mb-6">
+			<h3 class="text-[11px] font-bold text-text-muted uppercase tracking-[1px] mb-3">Subsystem Health</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				{#each subsystems as ss}
+					{@const health = healthStatus(ss.failedLastHour)}
+					<a
+						href="/subsystems/{ss.id}"
+						class="bg-surface rounded-lg border border-border p-4 hover:bg-surface-hover transition-all duration-150 hover:-translate-y-px"
+					>
+						<div class="flex justify-between items-center mb-3">
+							<span class="text-sm font-semibold text-text-bright">{ss.name}</span>
+							<span class="text-xs font-semibold {health.color}">{health.label}</span>
+						</div>
+						<div class="grid grid-cols-3 gap-2 text-xs">
+							<div>
+								<span class="block text-text-muted text-[10px] uppercase tracking-wider">Running</span>
+								<span class="font-mono font-semibold text-running">{ss.activeRuns}</span>
+							</div>
+							<div>
+								<span class="block text-text-muted text-[10px] uppercase tracking-wider">Failed/1h</span>
+								<span class="font-mono font-semibold {ss.failedLastHour > 0 ? 'text-failed' : 'text-text-muted'}">{ss.failedLastHour}</span>
+							</div>
+							<div>
+								<span class="block text-text-muted text-[10px] uppercase tracking-wider">Err Rate</span>
+								<span class="font-mono font-semibold {ss.errorRate > 0.05 ? 'text-failed' : 'text-text-muted'}">{(ss.errorRate * 100).toFixed(1)}%</span>
+							</div>
+						</div>
+						<div class="mt-3 pt-2 border-t border-border-subtle text-xs text-text-muted">
+							{ss.workflowCount} workflow{ss.workflowCount !== 1 ? 's' : ''}
+						</div>
+					</a>
+				{/each}
+			</div>
 		</div>
 	{/if}
 
-	<!-- Recent Runs Table -->
-	<h3 class="text-lg font-medium mb-3">Recent Runs</h3>
-	<div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
-		<table class="w-full text-sm">
-			<thead>
-				<tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-					<th class="text-left px-4 py-2 font-medium">Run ID</th>
-					<th class="text-left px-4 py-2 font-medium">Workflow</th>
-					<th class="text-left px-4 py-2 font-medium">Foreign ID</th>
-					<th class="text-left px-4 py-2 font-medium">Status</th>
-					<th class="text-left px-4 py-2 font-medium">Current Step</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each recentRuns as run}
-					<tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30">
-						<td class="px-4 py-2 font-mono text-xs">
-							<a href="/runs/{run.id}" class="text-blue-600 dark:text-blue-400 hover:underline">
-								{run.id.slice(0, 8)}...
-							</a>
-						</td>
-						<td class="px-4 py-2">{run.workflowId}</td>
-						<td class="px-4 py-2 font-mono text-xs">{run.foreignId}</td>
-						<td class="px-4 py-2"><StatusBadge status={run.status} /></td>
-						<td class="px-4 py-2">{run.currentStep}</td>
-					</tr>
-				{:else}
-					<tr>
-						<td colspan="5" class="px-4 py-8 text-center text-muted">No runs found</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+	<!-- Capabilities -->
+	{#if capabilities}
+		<div class="text-xs text-text-muted">
+			Engine capabilities:
+			{#if capabilities.retryRun}<span class="mr-2 px-1.5 py-0.5 bg-surface border border-border rounded font-mono">Retry</span>{/if}
+			{#if capabilities.pauseRun}<span class="mr-2 px-1.5 py-0.5 bg-surface border border-border rounded font-mono">Pause</span>{/if}
+			{#if capabilities.cancelRun}<span class="mr-2 px-1.5 py-0.5 bg-surface border border-border rounded font-mono">Cancel</span>{/if}
+		</div>
+	{/if}
 {/if}

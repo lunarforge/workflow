@@ -1,12 +1,12 @@
 <script lang="ts">
-	let { label, value, color = 'text-gray-900 dark:text-gray-100' }: {
+	let { label, value, accentColor = 'border-accent' }: {
 		label: string;
 		value: string | number;
-		color?: string;
+		accentColor?: string;
 	} = $props();
 </script>
 
-<div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-	<p class="text-sm text-muted">{label}</p>
-	<p class="text-2xl font-semibold mt-1 {color}">{value}</p>
+<div class="bg-surface border border-border rounded-lg p-4 pb-3.5 border-b-3 {accentColor} cursor-pointer transition-all duration-150 hover:bg-surface-hover hover:-translate-y-px text-left">
+	<div class="text-[11px] text-text-muted uppercase tracking-[1.2px] font-semibold mb-2">{label}</div>
+	<span class="text-[32px] font-bold text-text-bright font-mono leading-none">{value}</span>
 </div>
