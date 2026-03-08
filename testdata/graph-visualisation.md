@@ -12,7 +12,7 @@ stateDiagram-v2
     state 9_branching <<choice>>
     9 --> 9_branching
     9_branching --> 10
-    9_branching --> 11 
+    9_branching --> 11
 	
 	10-->11
 ```
