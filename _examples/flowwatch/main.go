@@ -109,6 +109,13 @@ func main() {
 	triggerSampleOnboarding(ctx, onboardingWf)
 	triggerSampleRefunds(ctx, refundWf)
 
+	// --- Start continuous spawner (realistic load curve) ---
+	startSpawner(ctx, workflows{
+		order:      wf,
+		onboarding: onboardingWf,
+		refund:     refundWf,
+	})
+
 	<-ctx.Done()
 	fmt.Println("\nShutting down...")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
