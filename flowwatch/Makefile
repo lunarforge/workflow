@@ -1,4 +1,4 @@
-.PHONY: proto clean lint openapi redocly serve-docs all
+.PHONY: proto clean lint openapi redocly serve-docs all build build-gateway run run-gateway
 
 # ─── Configuration ───
 MODULE       := github.com/yourorg/flowwatch
@@ -61,8 +61,14 @@ generate: proto ## Run go generate
 build: ## Build the flowwatch server binary
 	go build -o bin/flowwatch ./cmd/flowwatch
 
-run: build ## Build and run
+build-gateway: ## Build the gateway server binary
+	go build -o bin/gateway ./cmd/gateway
+
+run: build ## Build and run flowwatch server
 	./bin/flowwatch
+
+run-gateway: build-gateway ## Build and run gateway server
+	./bin/gateway
 
 test: ## Run tests
 	go test ./... -v -race
