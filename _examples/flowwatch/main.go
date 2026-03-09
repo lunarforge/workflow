@@ -29,14 +29,14 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memrolescheduler"
-	"github.com/luno/workflow/adapters/memstepstore"
-	"github.com/luno/workflow/adapters/memstreamer"
-	"github.com/luno/workflow/adapters/memtimeoutstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memstepstore"
+	"github.com/lunarforge/workflow/adapters/memstreamer"
+	"github.com/lunarforge/workflow/adapters/memtimeoutstore"
 
-	"github.com/luno/workflow/flowwatch"
+	"github.com/lunarforge/workflow/flowwatch"
 )
 
 func main() {
@@ -73,9 +73,10 @@ func main() {
 	flowwatch.RegisterWorkflow(adapter, onboardingWf, flowwatch.WithSubsystem("identity"))
 	flowwatch.RegisterWorkflow(adapter, refundWf, flowwatch.WithSubsystem("billing"))
 
-	// --- FlowWatch API server ---
+	// --- FlowWatch API server (with analytics caching) ---
 	mux := http.NewServeMux()
-	flowwatch.RegisterHandlers(mux, adapter)
+	stopCache := flowwatch.RegisterHandlersWithCache(ctx, mux, adapter)
+	defer stopCache()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprintln(w, "ok")
 	})

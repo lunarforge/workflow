@@ -12,12 +12,15 @@
 package flowwatch
 
 import (
+	"context"
 	"net/http"
+	"time"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 
-	"github.com/luno/workflow/flowwatch/internal/lunoworkflow"
-	"github.com/luno/workflow/flowwatch/internal/server"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/lunoworkflow"
+	"github.com/lunarforge/workflow/flowwatch/internal/server"
 )
 
 // Adapter is a FlowWatch engine adapter for luno/workflow.
@@ -55,8 +58,43 @@ type Registration = lunoworkflow.WorkflowRegistration
 
 // RegisterHandlers mounts all FlowWatch Connect-Go service handlers onto the
 // given mux. The adapter provides the engine-specific backend.
+// If a CachingAdapter is active, it is used as the backend for all services.
 func RegisterHandlers(mux *http.ServeMux, a *Adapter) {
 	server.RegisterAll(mux, a)
+}
+
+// RegisterHandlersWithCache mounts all FlowWatch service handlers with a
+// CachingAdapter middleware that materializes analytics in the background.
+// Call the returned stop function to shut down the cache refresh loop.
+func RegisterHandlersWithCache(ctx context.Context, mux *http.ServeMux, a *Adapter, opts ...CacheOption) (stop func()) {
+	caching := adapter.NewCachingAdapter(a, adaptCacheOpts(opts)...)
+	caching.Start(ctx)
+	server.RegisterAll(mux, caching)
+	return caching.Stop
+}
+
+// CacheOption configures the analytics caching middleware.
+type CacheOption func(*cacheConfig)
+
+type cacheConfig struct {
+	interval time.Duration
+}
+
+// WithCacheRefreshInterval sets how often analytics are recomputed. Default: 5s.
+func WithCacheRefreshInterval(d time.Duration) CacheOption {
+	return func(c *cacheConfig) { c.interval = d }
+}
+
+func adaptCacheOpts(opts []CacheOption) []adapter.CachingOption {
+	var cfg cacheConfig
+	for _, opt := range opts {
+		opt(&cfg)
+	}
+	var out []adapter.CachingOption
+	if cfg.interval > 0 {
+		out = append(out, adapter.WithRefreshInterval(cfg.interval))
+	}
+	return out
 }
 
 // RetryFunc is a function that retries a finished workflow run.
