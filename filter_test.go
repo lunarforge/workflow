@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func TestMakeFilter(t *testing.T) {

@@ -1,14 +1,14 @@
-module github.com/luno/workflow/adapters/reflexstreamer
+module github.com/lunarforge/workflow/adapters/reflexstreamer
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
 	github.com/corverroos/truss v0.0.0-20210514115035-9e5e1b0851a9
 	github.com/luno/jettison v0.0.0-20250603184958-abc68693e98f
 	github.com/luno/reflex v0.0.0-20250529053715-2da8b8dc4425
-	github.com/luno/workflow v0.3.0
+	github.com/lunarforge/workflow v0.3.0
 	github.com/stretchr/testify v1.10.0
 )
 

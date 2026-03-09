@@ -6,7 +6,7 @@ import (
 	"github.com/luno/jettison/errors"
 	"github.com/luno/jettison/j"
 	"github.com/luno/jettison/log"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func New() *logger {

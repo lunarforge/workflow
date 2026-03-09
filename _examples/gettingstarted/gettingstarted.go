@@ -3,7 +3,7 @@ package gettingstarted
 import (
 	"context"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 type Status int

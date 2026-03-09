@@ -6,8 +6,8 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow/internal/graph"
-	"github.com/luno/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/graph"
+	"github.com/lunarforge/workflow/internal/metrics"
 )
 
 type (

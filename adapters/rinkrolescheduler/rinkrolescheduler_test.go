@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/luno/rink/v2"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 	"github.com/stretchr/testify/require"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 
-	"github.com/luno/workflow/adapters/rinkrolescheduler"
+	"github.com/lunarforge/workflow/adapters/rinkrolescheduler"
 )
 
 func TestRoleScheduler(t *testing.T) {

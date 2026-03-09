@@ -1,9 +1,9 @@
 package lunoworkflow
 
 import (
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 func recordToRunData(rec *workflow.Record) adapter.RunData {

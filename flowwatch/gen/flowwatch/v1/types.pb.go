@@ -1656,7 +1656,7 @@ const file_flowwatch_v1_types_proto_rawDesc = "" +
 	"\x0fLOG_LEVEL_DEBUG\x10\x01\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x02\x12\x12\n" +
 	"\x0eLOG_LEVEL_WARN\x10\x03\x12\x13\n" +
-	"\x0fLOG_LEVEL_ERROR\x10\x04BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"\x0fLOG_LEVEL_ERROR\x10\x04BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_types_proto_rawDescOnce sync.Once

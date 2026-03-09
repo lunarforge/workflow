@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func main() {

@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/luno/reflex/rsql"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 
-	"github.com/luno/workflow/adapters/reflexstreamer"
+	"github.com/lunarforge/workflow/adapters/reflexstreamer"
 )
 
 func TestConnector(t *testing.T) {

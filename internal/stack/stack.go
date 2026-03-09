@@ -18,7 +18,7 @@ func Trace() string {
 
 	var stackTrace string
 	for _, line := range lines {
-		if strings.Contains(line, "github.com/luno/workflow") {
+		if strings.Contains(line, "github.com/lunarforge/workflow") {
 			continue
 		}
 

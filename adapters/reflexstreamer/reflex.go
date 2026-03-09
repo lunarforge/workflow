@@ -13,7 +13,7 @@ import (
 	"github.com/luno/jettison/j"
 	"github.com/luno/reflex"
 	"github.com/luno/reflex/rsql"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func New(writer, reader *sql.DB, table *rsql.EventsTable, cursorStore reflex.CursorStore) workflow.EventStreamer {

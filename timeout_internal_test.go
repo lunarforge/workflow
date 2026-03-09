@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	clock_testing "k8s.io/utils/clock/testing"
 
-	"github.com/luno/workflow/internal/errorcounter"
+	"github.com/lunarforge/workflow/internal/errorcounter"
 )
 
 func TestProcessTimeout(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	flowwatchv1 "github.com/luno/workflow/flowwatch/gen/flowwatch/v1"
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	flowwatchv1 "github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 func analyticsParamsFromProto(f *flowwatchv1.AnalyticsFilter) adapter.AnalyticsParams {

@@ -3,9 +3,9 @@ package memstepstore_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
-	"github.com/luno/workflow/adapters/memstepstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow/adapters/memstepstore"
 )
 
 func TestStore(t *testing.T) {

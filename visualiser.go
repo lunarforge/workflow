@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/luno/workflow/internal/util"
+	"github.com/lunarforge/workflow/internal/util"
 )
 
 // CreateDiagram creates a diagram in a md file for communicating a workflow's set of steps in an easy-to-understand

@@ -5,7 +5,7 @@ import (
 
 	"github.com/luno/reflex"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 type EventType int

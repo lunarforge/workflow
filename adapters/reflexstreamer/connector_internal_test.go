@@ -7,7 +7,7 @@ import (
 	"github.com/luno/jettison/errors"
 	"github.com/luno/jettison/jtest"
 	"github.com/luno/reflex"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func TestConnectorErrHandling(t *testing.T) {

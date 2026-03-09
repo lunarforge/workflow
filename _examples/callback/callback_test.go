@@ -3,13 +3,13 @@ package callback_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memrolescheduler"
-	"github.com/luno/workflow/adapters/memstreamer"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memstreamer"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/_examples/callback"
+	"github.com/lunarforge/workflow/_examples/callback"
 )
 
 func TestCallbackWorkflow(t *testing.T) {

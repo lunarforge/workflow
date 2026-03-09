@@ -15,9 +15,9 @@ import (
 	"github.com/stretchr/testify/require"
 	clock_testing "k8s.io/utils/clock/testing"
 
-	"github.com/luno/workflow/internal/errorcounter"
-	"github.com/luno/workflow/internal/graph"
-	internal_logger "github.com/luno/workflow/internal/logger"
+	"github.com/lunarforge/workflow/internal/errorcounter"
+	"github.com/lunarforge/workflow/internal/graph"
+	internal_logger "github.com/lunarforge/workflow/internal/logger"
 )
 
 type testStatus int
@@ -161,7 +161,7 @@ func TestBuildOptions(t *testing.T) {
 	require.Equal(t, logger, w.logger.inner)
 	require.Equal(t, customErrorCounter, w.errorCounter)
 	require.Equal(t, opts, w.defaultOpts)
-	require.True(t, strings.Contains(runtime.FuncForPC(reflect.ValueOf(w.customDelete).Pointer()).Name(), "github.com/luno/workflow.TestBuildOptions.WithCustomDelete"))
+	require.True(t, strings.Contains(runtime.FuncForPC(reflect.ValueOf(w.customDelete).Pointer()).Name(), "github.com/lunarforge/workflow.TestBuildOptions.WithCustomDelete"))
 	object, err := w.customDelete(&Record{
 		Object: []byte(`"hello world"`),
 	})

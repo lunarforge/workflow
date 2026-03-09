@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 type ObjectDataRequest struct {

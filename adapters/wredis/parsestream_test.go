@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"

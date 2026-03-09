@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 type Option func(*StreamConstructor)

@@ -7,9 +7,9 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow/internal/errorcounter"
-	"github.com/luno/workflow/internal/graph"
-	interal_logger "github.com/luno/workflow/internal/logger"
+	"github.com/lunarforge/workflow/internal/errorcounter"
+	"github.com/lunarforge/workflow/internal/graph"
+	interal_logger "github.com/lunarforge/workflow/internal/logger"
 )
 
 const (

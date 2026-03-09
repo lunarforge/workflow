@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/luno/workflow/flowwatch/gen/flowwatch/v1"
+	v1 "github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1"
 	http "net/http"
 	strings "strings"
 )

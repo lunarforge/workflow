@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 	clock_testing "k8s.io/utils/clock/testing"
 
-	"github.com/luno/workflow/internal/errorcounter"
-	internal_logger "github.com/luno/workflow/internal/logger"
+	"github.com/lunarforge/workflow/internal/errorcounter"
+	internal_logger "github.com/lunarforge/workflow/internal/logger"
 )
 
 func Test_stepConsumer(t *testing.T) {

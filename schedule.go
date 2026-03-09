@@ -8,7 +8,7 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow/internal/cron"
+	"github.com/lunarforge/workflow/internal/cron"
 )
 
 func (w *Workflow[Type, Status]) Schedule(

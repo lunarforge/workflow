@@ -9,7 +9,7 @@ import (
 	"github.com/luno/jettison/log"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/adapters/jlog"
+	"github.com/lunarforge/workflow/adapters/jlog"
 )
 
 func TestDebug(t *testing.T) {
@@ -37,5 +37,5 @@ func TestError(t *testing.T) {
 	s := buf.String()
 	require.True(t, strings.Contains(s, "E 00:00:00.000 g/l/w/a/jlog/jlog.go:23: error(s)"))
 	require.True(t, strings.Contains(s, "test error"))
-	require.True(t, strings.Contains(s, "github.com/luno/workflow/adapters/jlog/jlog_test.go"))
+	require.True(t, strings.Contains(s, "github.com/lunarforge/workflow/adapters/jlog/jlog_test.go"))
 }

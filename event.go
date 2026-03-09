@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/luno/workflow/internal/outboxpb"
+	"github.com/lunarforge/workflow/internal/outboxpb"
 )
 
 type Event struct {

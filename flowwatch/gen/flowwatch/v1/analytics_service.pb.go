@@ -1176,7 +1176,7 @@ const file_flowwatch_v1_analytics_service_proto_rawDesc = "" +
 	"GetLatency\x12\x1f.flowwatch.v1.GetLatencyRequest\x1a .flowwatch.v1.GetLatencyResponse\"\x00\x12]\n" +
 	"\x0eGetFailureRate\x12#.flowwatch.v1.GetFailureRateRequest\x1a$.flowwatch.v1.GetFailureRateResponse\"\x00\x12`\n" +
 	"\x0fGetStepDuration\x12$.flowwatch.v1.GetStepDurationRequest\x1a%.flowwatch.v1.GetStepDurationResponse\"\x00\x12]\n" +
-	"\x0eGetStepHeatmap\x12#.flowwatch.v1.GetStepHeatmapRequest\x1a$.flowwatch.v1.GetStepHeatmapResponse\"\x00BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"\x0eGetStepHeatmap\x12#.flowwatch.v1.GetStepHeatmapRequest\x1a$.flowwatch.v1.GetStepHeatmapResponse\"\x00BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_analytics_service_proto_rawDescOnce sync.Once

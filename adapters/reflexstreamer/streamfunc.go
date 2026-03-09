@@ -9,7 +9,7 @@ import (
 
 	"github.com/luno/reflex"
 	"github.com/luno/reflex/rsql"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 // StreamFunc can take the single event source (rsql.EventsTableInt) for multiple workflows and stream events

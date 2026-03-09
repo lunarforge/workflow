@@ -3,14 +3,14 @@ module flowwatch-demo
 go 1.25.3
 
 replace (
-	github.com/luno/workflow => ../..
-	github.com/luno/workflow/flowwatch => ../../flowwatch
+	github.com/lunarforge/workflow => ../..
+	github.com/lunarforge/workflow/flowwatch => ../../flowwatch
 )
 
 require (
 	connectrpc.com/cors v0.1.0
-	github.com/luno/workflow v0.0.0
-	github.com/luno/workflow/flowwatch v0.0.0
+	github.com/lunarforge/workflow v0.0.0
+	github.com/lunarforge/workflow/flowwatch v0.0.0
 	github.com/rs/cors v1.11.1
 	github.com/rs/zerolog v1.33.0
 	golang.org/x/net v0.34.0

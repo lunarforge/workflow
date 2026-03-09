@@ -1630,7 +1630,7 @@ const file_flowwatch_v1_run_service_proto_rawDesc = "" +
 	"\bSkipStep\x12\x1d.flowwatch.v1.SkipStepRequest\x1a\x1e.flowwatch.v1.SkipStepResponse\"\x00\x12N\n" +
 	"\tBulkRetry\x12\x1e.flowwatch.v1.BulkRetryRequest\x1a\x1f.flowwatch.v1.BulkRetryResponse\"\x00\x12Q\n" +
 	"\n" +
-	"BulkCancel\x12\x1f.flowwatch.v1.BulkCancelRequest\x1a .flowwatch.v1.BulkCancelResponse\"\x00BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"BulkCancel\x12\x1f.flowwatch.v1.BulkCancelRequest\x1a .flowwatch.v1.BulkCancelResponse\"\x00BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_run_service_proto_rawDescOnce sync.Once

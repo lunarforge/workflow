@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func RunStepStoreTest(t *testing.T, factory func() workflow.StepStore) {

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/luno/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/metrics"
 )
 
 func consumeStepEvents[Type any, Status StatusType](

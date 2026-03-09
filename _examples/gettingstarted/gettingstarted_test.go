@@ -3,14 +3,14 @@ package gettingstarted_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memrolescheduler"
-	"github.com/luno/workflow/adapters/memstreamer"
-	"github.com/luno/workflow/adapters/memtimeoutstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memstreamer"
+	"github.com/lunarforge/workflow/adapters/memtimeoutstore"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/_examples/gettingstarted"
+	"github.com/lunarforge/workflow/_examples/gettingstarted"
 )
 
 func TestWorkflow(t *testing.T) {

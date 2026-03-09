@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/internal/stack"
+	"github.com/lunarforge/workflow/internal/stack"
 )
 
 func TestTrace(t *testing.T) {

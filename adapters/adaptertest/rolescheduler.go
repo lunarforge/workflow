@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func RunRoleSchedulerTest(t *testing.T, factory func(t *testing.T, instances int) []workflow.RoleScheduler) {

@@ -11,7 +11,7 @@ import (
 	"k8s.io/utils/clock"
 	clock_testing "k8s.io/utils/clock/testing"
 
-	internal_logger "github.com/luno/workflow/internal/logger"
+	internal_logger "github.com/lunarforge/workflow/internal/logger"
 )
 
 func Test_runOnce(t *testing.T) {

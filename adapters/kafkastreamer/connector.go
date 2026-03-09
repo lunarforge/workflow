@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func NewConnector(brokers []string, c *sarama.Config, t Translator, topic string) *connector {

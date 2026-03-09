@@ -5,7 +5,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 // RegisterAll mounts all FlowWatch service handlers onto the given mux.

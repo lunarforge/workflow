@@ -1,12 +1,12 @@
-module github.com/luno/workflow/adapters/kafkastreamer
+module github.com/lunarforge/workflow/adapters/kafkastreamer
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
 	github.com/IBM/sarama v1.45.2
-	github.com/luno/workflow v0.3.0
+	github.com/lunarforge/workflow v0.3.0
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/testcontainers/testcontainers-go/modules/kafka v0.35.0

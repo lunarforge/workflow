@@ -10,9 +10,9 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	natscontainer "github.com/testcontainers/testcontainers-go/modules/nats"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
-	"github.com/luno/workflow/adapters/natsstreamer"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow/adapters/natsstreamer"
 )
 
 func setupNATS(t *testing.T) *nats.Conn {

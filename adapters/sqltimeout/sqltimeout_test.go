@@ -1,11 +1,11 @@
 package sqltimeout_test
 
 import (
-	"github.com/luno/workflow/adapters/sqltimeout"
+	"github.com/lunarforge/workflow/adapters/sqltimeout"
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 )
 
 func TestStore(t *testing.T) {

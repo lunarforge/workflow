@@ -3,9 +3,9 @@ package memtimeoutstore_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
-	"github.com/luno/workflow/adapters/memtimeoutstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow/adapters/memtimeoutstore"
 )
 
 func TestStore(t *testing.T) {

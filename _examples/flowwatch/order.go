@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 // OrderStatus represents all possible states in the order workflow.

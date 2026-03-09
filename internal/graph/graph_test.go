@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/internal/graph"
+	"github.com/lunarforge/workflow/internal/graph"
 )
 
 func TestGraph(t *testing.T) {

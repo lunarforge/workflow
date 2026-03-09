@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/internal/outboxpb"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/internal/outboxpb"
 )
 
 func RunRecordStoreTest(t *testing.T, factory func() workflow.RecordStore) {

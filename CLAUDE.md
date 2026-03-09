@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`github.com/luno/workflow` is a type-safe, event-driven workflow orchestration library for Go. It uses Go generics to provide compile-time safety for building distributed state machines. Workflows are parameterized by two types: a data type (`Type`) and a status enum (`Status`).
+`github.com/lunarforge/workflow` is a type-safe, event-driven workflow orchestration library for Go. It uses Go generics to provide compile-time safety for building distributed state machines. Workflows are parameterized by two types: a data type (`Type`) and a status enum (`Status`).
 
 ## Build & Test Commands
 
@@ -75,7 +75,7 @@ Tests use two patterns:
 
 ## FlowWatch — Monitoring Dashboard
 
-`flowwatch/` is a separate Go module (`github.com/luno/workflow/flowwatch`) providing an engine-agnostic workflow monitoring dashboard with a Connect-Go API and SvelteKit frontend.
+`flowwatch/` is a separate Go module (`github.com/lunarforge/workflow/flowwatch`) providing an engine-agnostic workflow monitoring dashboard with a Connect-Go API and SvelteKit frontend.
 
 ### Build & Test
 
@@ -103,7 +103,7 @@ cd flowwatch/ui && buf generate  # TypeScript stubs
 
 ### Key Design Decisions
 
-- Uses `replace github.com/luno/workflow => ../` in `go.mod` for in-repo development
+- Uses `replace github.com/lunarforge/workflow => ../` in `go.mod` for in-repo development
 - `WorkflowRegistration` struct provides type-erased workflow metadata (graph info, labels, retry func) to the adapter
 - `RegisterWorkflow[Type, Status]()` generic helper extracts graph info and binds retry at registration time
 - RunStateController for Pause/Cancel/Resume actions uses `recordStore.Store` directly

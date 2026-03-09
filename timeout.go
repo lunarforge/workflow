@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/luno/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/metrics"
 )
 
 type TimeoutRecord struct {

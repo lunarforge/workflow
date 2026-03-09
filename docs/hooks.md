@@ -177,7 +177,7 @@ Handle different error conditions appropriately:
 import (
     "context"
     "log"
-    "github.com/luno/workflow"
+    "github.com/lunarforge/workflow"
 )
 
 builder.OnComplete(func(ctx context.Context, record *workflow.TypedRecord[Order, Status]) error {

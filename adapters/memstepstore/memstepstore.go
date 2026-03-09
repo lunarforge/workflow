@@ -5,7 +5,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 var _ workflow.StepStore = (*Store)(nil)

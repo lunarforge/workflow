@@ -1,12 +1,12 @@
-module github.com/luno/workflow/adapters/rinkrolescheduler
+module github.com/lunarforge/workflow/adapters/rinkrolescheduler
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
 	github.com/luno/rink/v2 v2.0.0-20250424095542-5a72923fe1a0
-	github.com/luno/workflow v0.3.0
+	github.com/lunarforge/workflow v0.3.0
 	github.com/stretchr/testify v1.10.0
 	go.etcd.io/etcd/client/v3 v3.5.18
 	google.golang.org/grpc v1.69.4

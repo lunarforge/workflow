@@ -7,8 +7,8 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/sqlstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/sqlstore"
 )
 
 // TestSQLWorkflow demonstrates testing a workflow with SQL persistence

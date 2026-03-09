@@ -1,11 +1,11 @@
-module github.com/luno/workflow/_examples/gettingstarted
+module github.com/lunarforge/workflow/_examples/gettingstarted
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
-	github.com/luno/workflow v0.3.0
+	github.com/lunarforge/workflow v0.3.0
 	github.com/stretchr/testify v1.10.0
 )
 

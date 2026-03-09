@@ -9,9 +9,9 @@ import (
 	"sync"
 	"unicode"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 // humanize converts a kebab-case ID like "order-fulfillment" to "Order Fulfillment".

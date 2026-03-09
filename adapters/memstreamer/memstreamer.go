@@ -6,7 +6,7 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func New(opts ...Option) *StreamConstructor {

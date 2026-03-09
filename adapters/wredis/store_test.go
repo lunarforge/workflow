@@ -3,14 +3,14 @@ package wredis_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	rediscontainer "github.com/testcontainers/testcontainers-go/modules/redis"
 
-	"github.com/luno/workflow/adapters/wredis"
+	"github.com/lunarforge/workflow/adapters/wredis"
 )
 
 func TestRedisRecordStore(t *testing.T) {

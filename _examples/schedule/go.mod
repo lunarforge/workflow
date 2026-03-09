@@ -1,11 +1,11 @@
-module github.com/luno/workflow/_examples/schedule
+module github.com/lunarforge/workflow/_examples/schedule
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
-	github.com/luno/workflow v0.3.0
+	github.com/lunarforge/workflow v0.3.0
 	github.com/stretchr/testify v1.10.0
 	k8s.io/utils v0.0.0-20240921022957-49e7df575cb6
 )

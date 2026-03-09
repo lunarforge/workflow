@@ -16,7 +16,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/luno/workflow/flowwatch/internal/server"
+	"github.com/lunarforge/workflow/flowwatch/internal/server"
 )
 
 func main() {

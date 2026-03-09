@@ -11,7 +11,7 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 type Option func(*options)

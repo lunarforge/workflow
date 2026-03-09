@@ -898,7 +898,7 @@ const file_flowwatch_v1_workflow_service_proto_rawDesc = "" +
 	"\x0fGetCapabilities\x12$.flowwatch.v1.GetCapabilitiesRequest\x1a%.flowwatch.v1.GetCapabilitiesResponse\"\x00\x12]\n" +
 	"\x0eListSubsystems\x12#.flowwatch.v1.ListSubsystemsRequest\x1a$.flowwatch.v1.ListSubsystemsResponse\"\x00\x12W\n" +
 	"\fGetSubsystem\x12!.flowwatch.v1.GetSubsystemRequest\x1a\".flowwatch.v1.GetSubsystemResponse\"\x00\x12K\n" +
-	"\bGetTrace\x12\x1d.flowwatch.v1.GetTraceRequest\x1a\x1e.flowwatch.v1.GetTraceResponse\"\x00BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"\bGetTrace\x12\x1d.flowwatch.v1.GetTraceRequest\x1a\x1e.flowwatch.v1.GetTraceResponse\"\x00BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_workflow_service_proto_rawDescOnce sync.Once

@@ -7,8 +7,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow/internal/metrics"
-	"github.com/luno/workflow/internal/outboxpb"
+	"github.com/lunarforge/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/outboxpb"
 )
 
 func outboxConsumer[Type any, Status StatusType](w *Workflow[Type, Status], config outboxConfig) {

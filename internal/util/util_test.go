@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/internal/util"
+	"github.com/lunarforge/workflow/internal/util"
 )
 
 func TestCamelCaseToSpacing(t *testing.T) {

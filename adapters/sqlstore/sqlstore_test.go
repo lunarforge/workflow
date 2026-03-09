@@ -3,10 +3,10 @@ package sqlstore_test
 import (
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 
-	"github.com/luno/workflow/adapters/sqlstore"
+	"github.com/lunarforge/workflow/adapters/sqlstore"
 )
 
 func TestStore(t *testing.T) {

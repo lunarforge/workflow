@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memrolescheduler"
-	"github.com/luno/workflow/adapters/memstreamer"
-	"github.com/luno/workflow/internal/logger"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memstreamer"
+	"github.com/lunarforge/workflow/internal/logger"
 )
 
 func TestStore(t *testing.T) {

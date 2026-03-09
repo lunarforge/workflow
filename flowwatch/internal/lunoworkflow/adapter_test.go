@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memstepstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memstepstore"
 
-	"github.com/luno/workflow/flowwatch/internal/adapter"
-	"github.com/luno/workflow/flowwatch/internal/lunoworkflow"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/lunoworkflow"
 )
 
 func TestAdapterMetadata(t *testing.T) {

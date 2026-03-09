@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/adapters/webui/internal/api"
+	"github.com/lunarforge/workflow/adapters/webui/internal/api"
 )
 
 type testObjectData struct {

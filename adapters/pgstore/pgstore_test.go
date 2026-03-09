@@ -12,9 +12,9 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
-	"github.com/luno/workflow/adapters/pgstore"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow/adapters/pgstore"
 )
 
 func setupDB(t *testing.T) *bun.DB {

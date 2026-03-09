@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/internal/logger"
+	"github.com/lunarforge/workflow/internal/logger"
 )
 
 func TestLoggerDebug(t *testing.T) {

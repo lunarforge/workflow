@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/internal/errorcounter"
+	"github.com/lunarforge/workflow/internal/errorcounter"
 )
 
 func TestErrorCounter(t *testing.T) {

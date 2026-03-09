@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/luno/workflow/internal/stack"
-	"github.com/luno/workflow/internal/util"
+	"github.com/lunarforge/workflow/internal/stack"
+	"github.com/lunarforge/workflow/internal/util"
 )
 
 func (w *Workflow[Type, Status]) Trigger(

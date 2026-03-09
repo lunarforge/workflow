@@ -1,4 +1,4 @@
-module github.com/luno/workflow
+module github.com/lunarforge/workflow
 
 go 1.25.3
 

@@ -1,10 +1,10 @@
-module github.com/luno/workflow/_examples/connector
+module github.com/lunarforge/workflow/_examples/connector
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
-require github.com/luno/workflow v0.3.0
+require github.com/lunarforge/workflow v0.3.0
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

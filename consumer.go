@@ -6,7 +6,7 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/metrics"
 )
 
 // ConsumerFunc provides a record that is expected to be modified if the data needs to change. If true is returned with

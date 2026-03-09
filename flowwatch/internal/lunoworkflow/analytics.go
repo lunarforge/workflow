@@ -7,9 +7,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 // parseGranularity converts a granularity string like "1h", "15m", "1d" to a time.Duration.

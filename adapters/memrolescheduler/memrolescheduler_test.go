@@ -1,11 +1,11 @@
 package memrolescheduler_test
 
 import (
-	"github.com/luno/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
 	"testing"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 )
 
 func TestRoleScheduler(t *testing.T) {

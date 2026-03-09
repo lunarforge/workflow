@@ -8,8 +8,8 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/internal/outboxpb"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/internal/outboxpb"
 )
 
 type (

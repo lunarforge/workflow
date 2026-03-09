@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/IBM/sarama"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	kafkacontainer "github.com/testcontainers/testcontainers-go/modules/kafka"
 
-	"github.com/luno/workflow/adapters/kafkastreamer"
+	"github.com/lunarforge/workflow/adapters/kafkastreamer"
 )
 
 func TestStreamer(t *testing.T) {

@@ -2,12 +2,12 @@ module example.com/sqlexample
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
 require (
 	github.com/go-sql-driver/mysql v1.9.0
-	github.com/luno/workflow v0.3.0
-	github.com/luno/workflow/adapters/sqlstore v0.0.0-20260206100555-ad0fef9d5364
+	github.com/lunarforge/workflow v0.3.0
+	github.com/lunarforge/workflow/adapters/sqlstore v0.0.0-20260206100555-ad0fef9d5364
 )
 
 require (

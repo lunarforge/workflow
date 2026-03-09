@@ -3,7 +3,7 @@ package schedule
 import (
 	"context"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 	"k8s.io/utils/clock"
 )
 

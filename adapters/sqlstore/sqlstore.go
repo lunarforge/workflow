@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/luno/jettison/errors"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 const defaultListLimit = 25

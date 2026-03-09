@@ -7,7 +7,7 @@ This guide will walk you through installing Workflow and creating your first wor
 Add the Workflow library to your Go project:
 
 ```bash
-go get github.com/luno/workflow
+go get github.com/lunarforge/workflow
 ```
 
 ## Your First Workflow
@@ -25,10 +25,10 @@ import (
     "context"
     "fmt"
     "time"
-    "github.com/luno/workflow"
-    "github.com/luno/workflow/adapters/memstreamer"
-    "github.com/luno/workflow/adapters/memrecordstore"
-    "github.com/luno/workflow/adapters/memrolescheduler"
+    "github.com/lunarforge/workflow"
+    "github.com/lunarforge/workflow/adapters/memstreamer"
+    "github.com/lunarforge/workflow/adapters/memrecordstore"
+    "github.com/lunarforge/workflow/adapters/memrolescheduler"
 )
 
 // TaskStatus represents the possible states in our workflow
@@ -167,7 +167,7 @@ Save this code to `main.go` and run:
 
 ```bash
 go mod init workflow-example
-go get github.com/luno/workflow
+go get github.com/lunarforge/workflow
 go run main.go
 ```
 
@@ -245,7 +245,7 @@ CREATE TABLE workflow_outbox (...);
 import (
     "database/sql"
     _ "github.com/go-sql-driver/mysql"
-    "github.com/luno/workflow/adapters/sqlstore"
+    "github.com/lunarforge/workflow/adapters/sqlstore"
 )
 
 // Connect to database

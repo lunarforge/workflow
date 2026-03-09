@@ -9,7 +9,7 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 // Translator converts a NATS JetStream message into a workflow ConnectorEvent.

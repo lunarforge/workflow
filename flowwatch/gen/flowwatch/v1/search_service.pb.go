@@ -1295,7 +1295,7 @@ const file_flowwatch_v1_search_service_proto_rawDesc = "" +
 	"\aSuggest\x12\x1c.flowwatch.v1.SuggestRequest\x1a\x1d.flowwatch.v1.SuggestResponse\"\x00\x12H\n" +
 	"\aExplain\x12\x1c.flowwatch.v1.ExplainRequest\x1a\x1d.flowwatch.v1.ExplainResponse\"\x00\x12H\n" +
 	"\aReindex\x12\x1c.flowwatch.v1.ReindexRequest\x1a\x1d.flowwatch.v1.ReindexResponse\"\x00\x12Z\n" +
-	"\rGetIndexStats\x12\".flowwatch.v1.GetIndexStatsRequest\x1a#.flowwatch.v1.GetIndexStatsResponse\"\x00BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"\rGetIndexStats\x12\".flowwatch.v1.GetIndexStatsRequest\x1a#.flowwatch.v1.GetIndexStatsResponse\"\x00BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_search_service_proto_rawDescOnce sync.Once

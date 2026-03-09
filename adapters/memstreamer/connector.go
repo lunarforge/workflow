@@ -8,7 +8,7 @@ import (
 
 	"k8s.io/utils/clock"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func NewConnector(events []workflow.ConnectorEvent, opts ...Option) *connector {

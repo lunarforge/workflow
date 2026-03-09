@@ -9,7 +9,7 @@ import (
 	"github.com/luno/reflex"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/adapters/reflexstreamer"
+	"github.com/lunarforge/workflow/adapters/reflexstreamer"
 )
 
 var tables = []string{

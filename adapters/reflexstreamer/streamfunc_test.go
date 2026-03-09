@@ -9,12 +9,12 @@ import (
 	"github.com/luno/reflex"
 	"github.com/luno/reflex/rpatterns"
 	"github.com/luno/reflex/rsql"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/memrecordstore"
-	"github.com/luno/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/adapters/reflexstreamer"
+	"github.com/lunarforge/workflow/adapters/reflexstreamer"
 )
 
 func TestStreamFunc(t *testing.T) {

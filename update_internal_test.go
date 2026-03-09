@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	clock_testing "k8s.io/utils/clock/testing"
 
-	"github.com/luno/workflow/internal/graph"
+	"github.com/lunarforge/workflow/internal/graph"
 )
 
 func TestUpdater(t *testing.T) {

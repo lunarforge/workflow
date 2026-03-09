@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/workflowpb"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/workflowpb"
 )
 
 func TestProtoMarshalAndUnmarshal(t *testing.T) {

@@ -6,11 +6,11 @@ import (
 
 	"github.com/luno/jettison/jtest"
 	"github.com/luno/reflex/rsql"
-	"github.com/luno/workflow"
-	"github.com/luno/workflow/adapters/adaptertest"
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/adaptertest"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luno/workflow/adapters/reflexstreamer"
+	"github.com/lunarforge/workflow/adapters/reflexstreamer"
 )
 
 func TestStreamer(t *testing.T) {

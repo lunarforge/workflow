@@ -6,7 +6,7 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	flowwatchv1 "github.com/luno/workflow/flowwatch/gen/flowwatch/v1"
+	flowwatchv1 "github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1"
 )
 
 func (s *runServer) ListRuns(ctx context.Context, req *connect.Request[flowwatchv1.ListRunsRequest]) (*connect.Response[flowwatchv1.ListRunsResponse], error) {

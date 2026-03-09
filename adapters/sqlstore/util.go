@@ -7,7 +7,7 @@ import (
 
 	"github.com/luno/jettison/errors"
 	"github.com/luno/jettison/j"
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func (s *SQLStore) create(

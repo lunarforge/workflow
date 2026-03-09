@@ -3,7 +3,7 @@ package workflow
 import (
 	"strconv"
 
-	"github.com/luno/workflow/internal/metrics"
+	"github.com/lunarforge/workflow/internal/metrics"
 )
 
 //go:generate stringer -type=State

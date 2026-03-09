@@ -4,7 +4,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 func ProtoMarshal(r *workflow.Record) ([]byte, error) {

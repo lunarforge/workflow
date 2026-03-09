@@ -49,8 +49,8 @@ type EventReceiver interface {
 
 | Adapter | Use Case | Install |
 |---------|----------|---------|
-| **kafkastreamer** | Production event streaming | `go get github.com/luno/workflow/adapters/kafkastreamer` |
-| **reflexstreamer** | Luno's Reflex event sourcing | `go get github.com/luno/workflow/adapters/reflexstreamer` |
+| **kafkastreamer** | Production event streaming | `go get github.com/lunarforge/workflow/adapters/kafkastreamer` |
+| **reflexstreamer** | Luno's Reflex event sourcing | `go get github.com/lunarforge/workflow/adapters/reflexstreamer` |
 | **memstreamer** | Development and testing | Built-in |
 
 **Example**:
@@ -86,7 +86,7 @@ type RecordStore interface {
 
 | Adapter | Use Case | Install |
 |---------|----------|---------|
-| **sqlstore** | Production with SQL databases | `go get github.com/luno/workflow/adapters/sqlstore` |
+| **sqlstore** | Production with SQL databases | `go get github.com/lunarforge/workflow/adapters/sqlstore` |
 | **memrecordstore** | Development and testing | Built-in |
 
 **Requirements**:
@@ -123,7 +123,7 @@ type RoleScheduler interface {
 
 | Adapter | Use Case | Install |
 |---------|----------|---------|
-| **rinkrolescheduler** | Production distributed coordination | `go get github.com/luno/workflow/adapters/rinkrolescheduler` |
+| **rinkrolescheduler** | Production distributed coordination | `go get github.com/lunarforge/workflow/adapters/rinkrolescheduler` |
 | **memrolescheduler** | Single-instance development | Built-in |
 
 **Example**:
@@ -155,7 +155,7 @@ type TimeoutStore interface {
 
 | Adapter | Use Case | Install |
 |---------|----------|---------|
-| **sqltimeout** | Production durable timeouts | `go get github.com/luno/workflow/adapters/sqltimeout` |
+| **sqltimeout** | Production durable timeouts | `go get github.com/lunarforge/workflow/adapters/sqltimeout` |
 | **memtimeoutstore** | Development and testing | Built-in |
 
 **Example**:
@@ -440,7 +440,7 @@ Some adapters provide additional monitoring capabilities:
 ### WebUI Adapter
 
 ```go
-import "github.com/luno/workflow/adapters/webui"
+import "github.com/lunarforge/workflow/adapters/webui"
 
 // Add HTTP handlers for workflow monitoring
 http.Handle("/", webui.HomeHandlerFunc(webui.Paths{
@@ -454,7 +454,7 @@ http.HandleFunc("/api/object", webui.ObjectDataHandlerFunc(recordStore))
 ### Logging Adapter
 
 ```go
-import "github.com/luno/workflow/adapters/jlog"
+import "github.com/lunarforge/workflow/adapters/jlog"
 
 // Use structured logging
 logger := jlog.New()

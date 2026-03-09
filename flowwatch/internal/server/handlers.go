@@ -5,8 +5,8 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/luno/workflow/flowwatch/gen/flowwatch/v1/flowwatchv1connect"
-	"github.com/luno/workflow/flowwatch/internal/adapter"
+	"github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1/flowwatchv1connect"
+	"github.com/lunarforge/workflow/flowwatch/internal/adapter"
 )
 
 // workflowServer implements WorkflowServiceHandler by delegating to the EngineAdapter.

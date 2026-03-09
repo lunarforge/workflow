@@ -1,14 +1,14 @@
-module github.com/luno/workflow/_examples/webui
+module github.com/lunarforge/workflow/_examples/webui
 
 go 1.25.3
 
-replace github.com/luno/workflow => ../..
+replace github.com/lunarforge/workflow => ../..
 
-replace github.com/luno/workflow/adapters/webui => ../../adapters/webui
+replace github.com/lunarforge/workflow/adapters/webui => ../../adapters/webui
 
 require (
-	github.com/luno/workflow v0.3.0
-	github.com/luno/workflow/adapters/webui v0.0.0-20250611203407-3b569843cc0e
+	github.com/lunarforge/workflow v0.3.0
+	github.com/lunarforge/workflow/adapters/webui v0.0.0-20250611203407-3b569843cc0e
 )
 
 require (

@@ -562,7 +562,7 @@ const file_flowwatch_v1_stream_service_proto_rawDesc = "" +
 	"\tWatchRuns\x12\x1e.flowwatch.v1.WatchRunsRequest\x1a\x16.flowwatch.v1.RunEvent\"\x000\x01\x12K\n" +
 	"\bWatchRun\x12\x1d.flowwatch.v1.WatchRunRequest\x1a\x1c.flowwatch.v1.RunDetailEvent\"\x000\x01\x12N\n" +
 	"\n" +
-	"WatchStats\x12\x1f.flowwatch.v1.WatchStatsRequest\x1a\x1b.flowwatch.v1.StatsSnapshot\"\x000\x01BAZ?github.com/luno/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
+	"WatchStats\x12\x1f.flowwatch.v1.WatchStatsRequest\x1a\x1b.flowwatch.v1.StatsSnapshot\"\x000\x01BGZEgithub.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1b\x06proto3"
 
 var (
 	file_flowwatch_v1_stream_service_proto_rawDescOnce sync.Once

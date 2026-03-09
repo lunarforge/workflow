@@ -9,7 +9,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/luno/workflow"
+	"github.com/lunarforge/workflow"
 )
 
 // spawnConfig controls the load curve shape.
