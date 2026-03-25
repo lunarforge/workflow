@@ -75,35 +75,10 @@ Tests use two patterns:
 
 ## FlowWatch — Monitoring Dashboard
 
-`flowwatch/` is a separate Go module (`github.com/lunarforge/workflow/flowwatch`) providing an engine-agnostic workflow monitoring dashboard with a Connect-Go API and SvelteKit frontend.
+FlowWatch is a separate product and repository: **[github.com/lunarforge/flowwatch](https://github.com/lunarforge/flowwatch)**
 
-### Build & Test
+It provides an engine-agnostic workflow monitoring dashboard (Connect-Go API + SvelteKit frontend) built on top of this library. The `_examples/flowwatch/` directory contains a minimal integration example.
 
-```bash
-# Go tests
-cd flowwatch && go test -v -race ./...
-
-# Frontend (requires bun)
-cd flowwatch/ui && bun install && bun run build
-
-# Regenerate protobuf (requires buf CLI)
-cd flowwatch && buf generate    # Go stubs
-cd flowwatch/ui && buf generate  # TypeScript stubs
-```
-
-### Architecture
-
-- **Proto definitions**: `flowwatch/proto/flowwatch/v1/` — 6 services (Workflow, Run, Search, Analytics, Stream, plus shared types)
-- **Generated code**: `flowwatch/gen/` (Go), `flowwatch/ui/src/gen/` (TypeScript)
-- **EngineAdapter interface**: `flowwatch/internal/adapter/adapter.go` — abstraction layer between services and workflow engines
-- **luno/workflow adapter**: `flowwatch/internal/lunoworkflow/` — concrete adapter using RecordStore and StepStore
-- **Connect-Go handlers**: `flowwatch/internal/server/` — service implementations, proto conversion, logging interceptor
-- **Server entry point**: `flowwatch/cmd/flowwatch/main.go` — h2c server with CORS support
-- **SvelteKit frontend**: `flowwatch/ui/` — Svelte 5 + Tailwind CSS v4 + Connect-Web transport
-
-### Key Design Decisions
-
-- Uses `replace github.com/lunarforge/workflow => ../` in `go.mod` for in-repo development
-- `WorkflowRegistration` struct provides type-erased workflow metadata (graph info, labels, retry func) to the adapter
-- `RegisterWorkflow[Type, Status]()` generic helper extracts graph info and binds retry at registration time
-- RunStateController for Pause/Cancel/Resume actions uses `recordStore.Store` directly
+- Module path: `github.com/lunarforge/flowwatch`
+- Depends on `github.com/lunarforge/workflow` (this library) via replace directive in local development
+- See the flowwatch repo for architecture, build instructions, and API docs

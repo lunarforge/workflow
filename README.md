@@ -56,9 +56,8 @@ wf := b.Build(kafkastreamer.New(), sqlstore.New(), rinkrolescheduler.New())
 ### 📊 **Built-in Observability**
 Production-ready monitoring without the setup overhead:
 - **Prometheus metrics** for throughput, latency, and error rates
-- **Web UI** for real-time workflow visualization
 - **Structured logging** with correlation IDs
-- **Distributed tracing** support
+- **[FlowWatch](https://github.com/lunarforge/flowwatch)** — dedicated monitoring dashboard with real-time run streams, multi-subsystem gateway, and lifecycle controls
 
 ## Perfect For
 

@@ -36,7 +36,7 @@ import (
 	"github.com/lunarforge/workflow/adapters/memstreamer"
 	"github.com/lunarforge/workflow/adapters/memtimeoutstore"
 
-	"github.com/lunarforge/workflow/flowwatch"
+	"github.com/lunarforge/flowwatch"
 )
 
 func main() {
