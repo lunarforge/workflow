@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package flowwatch.v1;
+
+option go_package = "github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1";
+
+import "flowwatch/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// GatewayService enables subsystem FlowWatch instances to register with a
+// central gateway via a persistent bidirectional stream. The gateway maintains
+// a registry of connected subsystems and proxies UI requests to them.
+service GatewayService {
+  // Register opens a persistent bidirectional stream between a subsystem and
+  // the gateway. The subsystem sends a RegisterRequest as its first message,
+  // then heartbeat pongs. The gateway sends a RegisterResponse followed by
+  // heartbeat pings and optional commands.
+  rpc Register(stream SubsystemMessage) returns (stream GatewayMessage) {}
+}
+
+// ─── Subsystem → Gateway ───
+
+message SubsystemMessage {
+  oneof msg {
+    RegisterRequest register = 1;
+    Heartbeat pong           = 2;
+  }
+}
+
+message RegisterRequest {
+  string subsystem_id                        = 1;  // unique ID e.g. "sap-edocs"
+  string subsystem_name                      = 2;  // human-readable "SAP eDocs"
+  string description                         = 3;
+  string api_key                             = 4;  // shared secret for auth
+  string flowwatch_endpoint                  = 5;  // e.g. "http://sap-edocs:8090"
+  repeated WorkflowDefinition workflows      = 6;  // workflows this subsystem serves
+  Capabilities capabilities                  = 7;
+  map<string, string> metadata               = 8;
+}
+
+// ─── Gateway → Subsystem ───
+
+message GatewayMessage {
+  oneof msg {
+    RegisterResponse registered  = 1;
+    Heartbeat ping               = 2;
+    DisconnectCommand disconnect = 3;
+  }
+}
+
+message RegisterResponse {
+  bool accepted                              = 1;
+  string reject_reason                       = 2;  // populated when accepted=false
+  google.protobuf.Duration heartbeat_interval = 3;  // how often the subsystem should pong
+}
+
+message DisconnectCommand {
+  string reason = 1;
+}
+
+// ─── Shared ───
+
+message Heartbeat {
+  google.protobuf.Timestamp timestamp = 1;
+}

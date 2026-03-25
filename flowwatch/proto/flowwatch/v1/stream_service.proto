@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package flowwatch.v1;
+
+option go_package = "github.com/lunarforge/workflow/flowwatch/gen/flowwatch/v1;flowwatchv1";
+
+import "flowwatch/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+// StreamService provides real-time server-streaming RPCs.
+// Connect-Go exposes these as Server-Sent Events (SSE) over HTTP,
+// making them consumable from browsers without WebSocket libraries.
+service StreamService {
+  // WatchRuns streams run-level status changes matching the given filter.
+  // The client receives an event each time a run's status changes.
+  rpc WatchRuns(WatchRunsRequest) returns (stream RunEvent) {}
+
+  // WatchRun streams all events for a single run (step changes, logs).
+  rpc WatchRun(WatchRunRequest) returns (stream RunDetailEvent) {}
+
+  // WatchStats streams periodic aggregate stats snapshots.
+  rpc WatchStats(WatchStatsRequest) returns (stream StatsSnapshot) {}
+}
+
+// ─── WatchRuns ───
+
+message WatchRunsRequest {
+  repeated string workflow_ids   = 1;  // empty = all workflows
+  repeated RunStatus statuses    = 2;  // empty = all statuses
+  repeated string subsystem_ids  = 3;  // empty = all subsystems
+  bool include_initial_snapshot  = 4;  // if true, emit current matching runs before streaming deltas
+}
+
+enum RunEventType {
+  RUN_EVENT_TYPE_UNSPECIFIED = 0;
+  RUN_EVENT_TYPE_CREATED     = 1;
+  RUN_EVENT_TYPE_UPDATED     = 2;
+  RUN_EVENT_TYPE_COMPLETED   = 3;
+}
+
+message RunEvent {
+  RunEventType event_type                = 1;
+  Run run                                = 2;
+  google.protobuf.Timestamp event_time   = 3;
+}
+
+// ─── WatchRun (single run detail stream) ───
+
+message WatchRunRequest {
+  string run_id = 1;
+}
+
+enum RunDetailEventType {
+  RUN_DETAIL_EVENT_TYPE_UNSPECIFIED  = 0;
+  RUN_DETAIL_EVENT_TYPE_RUN_UPDATED  = 1;
+  RUN_DETAIL_EVENT_TYPE_STEP_UPDATED = 2;
+  RUN_DETAIL_EVENT_TYPE_LOG_APPENDED = 3;
+}
+
+message RunDetailEvent {
+  RunDetailEventType event_type          = 1;
+  google.protobuf.Timestamp event_time   = 2;
+
+  // Exactly one of these is populated, depending on event_type.
+  Run run                      = 3;  // for RUN_UPDATED
+  StepExecution step           = 4;  // for STEP_UPDATED
+  LogEntry log_entry           = 5;  // for LOG_APPENDED
+}
+
+// ─── WatchStats ───
+
+message WatchStatsRequest {
+  int32 interval_seconds = 1;  // emit interval (default 10, min 5, max 60)
+}
+
+message StatsSnapshot {
+  google.protobuf.Timestamp timestamp   = 1;
+  int32 running                         = 2;
+  int32 succeeded_last_minute           = 3;
+  int32 failed_last_minute              = 4;
+  int32 paused                          = 5;
+  double rate_per_minute                = 6;
+  double error_rate                     = 7;  // 0.0 – 1.0
+}

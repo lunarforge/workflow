@@ -1,0 +1,121 @@
+name: Run
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  core:
+    strategy:
+      matrix:
+        go: [ '1.24', '1' ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Vet
+        run: go vet -v ./...
+
+      - name: Test
+        run: go test -v -race -timeout=5m ./...
+
+  adapters_and_examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Vet Adapters
+        run: |
+          find ./adapters -type f -name "go.mod" -exec dirname {} \; | while read -r dir; do
+            echo "Running go vet in $dir"
+            (cd "$dir" && go vet ./...)
+          done
+
+      - name: Vet Examples
+        run: |
+          find ./_examples -type f -name "go.mod" -exec dirname {} \; | while read -r dir; do
+            echo "Running go vet in $dir"
+            (cd "$dir" && go vet ./...)
+          done
+
+  integration_tests:
+    name: Integration Tests (Testcontainers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Check Docker availability
+        run: |
+          docker --version
+          docker info
+
+      - name: Test Kafka Adapter with Testcontainers
+        run: |
+          cd ./adapters/kafkastreamer
+          echo "🚀 Testing Kafka adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+      - name: Test Redis Adapter with Testcontainers
+        run: |
+          cd ./adapters/wredis
+          echo "🚀 Testing Redis adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+      - name: Test PostgreSQL Adapter with Testcontainers
+        run: |
+          cd ./adapters/pgstore
+          echo "🚀 Testing PostgreSQL adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+      - name: Test NATS Adapter with Testcontainers
+        run: |
+          cd ./adapters/natsstreamer
+          echo "🚀 Testing NATS adapter with testcontainers..."
+          go test -v -timeout=10m ./...
+
+  flowwatch:
+    name: FlowWatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Vet
+        run: cd flowwatch && go vet ./...
+
+      - name: Test
+        run: cd flowwatch && go test -v -race -timeout=5m ./...
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install UI dependencies
+        run: cd flowwatch/ui && bun install --frozen-lockfile
+
+      - name: Build UI
+        run: cd flowwatch/ui && bun run build

@@ -1,0 +1,44 @@
+package workflow_test
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/lunarforge/workflow"
+	"github.com/lunarforge/workflow/adapters/memrecordstore"
+	"github.com/lunarforge/workflow/adapters/memrolescheduler"
+	"github.com/lunarforge/workflow/adapters/memstreamer"
+)
+
+func TestAwait(t *testing.T) {
+	b := workflow.NewBuilder[string, status]("consumer lag")
+	b.AddStep(
+		StatusStart,
+		func(ctx context.Context, r *workflow.Run[string, status]) (status, error) {
+			*r.Object = "hello world"
+			return StatusEnd, nil
+		},
+		StatusEnd,
+	)
+	wf := b.Build(
+		memstreamer.New(),
+		memrecordstore.New(),
+		memrolescheduler.New(),
+	)
+
+	ctx := t.Context()
+	wf.Run(ctx)
+	t.Cleanup(wf.Stop)
+
+	runID, err := wf.Trigger(ctx, "1")
+	require.NoError(t, err)
+
+	res, err := wf.Await(ctx, "1", runID, StatusEnd, workflow.WithAwaitPollingFrequency(10*time.Nanosecond))
+	require.NoError(t, err)
+
+	require.Equal(t, StatusEnd, res.Status)
+	require.Equal(t, "hello world", *res.Object)
+}
