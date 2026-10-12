@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -61,6 +62,11 @@ var _ workflow.EventStreamer = (*StreamConstructor)(nil)
 type StreamConstructor struct {
 	js   jetstream.JetStream
 	opts options
+
+	// ensured holds topics whose stream this constructor already created or
+	// updated. The workflow outbox makes a sender per published event; without
+	// this every event cost a JetStream stream-update API call.
+	ensured sync.Map // topic → struct{}
 }
 
 func (s *StreamConstructor) NewSender(ctx context.Context, topic string) (workflow.EventSender, error) {
@@ -144,6 +150,9 @@ func (s *StreamConstructor) NewReceiver(
 }
 
 func (s *StreamConstructor) ensureStream(ctx context.Context, topic string) error {
+	if _, ok := s.ensured.Load(topic); ok {
+		return nil
+	}
 	streamName := streamNameFromTopic(topic)
 
 	cfg := jetstream.StreamConfig{
@@ -165,6 +174,7 @@ func (s *StreamConstructor) ensureStream(ctx context.Context, topic string) erro
 		return fmt.Errorf("ensure stream %q for topic %q: %w", streamName, topic, err)
 	}
 
+	s.ensured.Store(topic, struct{}{})
 	return nil
 }
 
