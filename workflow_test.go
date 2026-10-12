@@ -133,8 +133,8 @@ func TestWorkflowAcceptanceTest(t *testing.T) {
 	})
 
 	workflow.TriggerCallbackOn(t, wf, fid, runID, StatusEmailVerified, ExternalCellPhoneSubmitted{
-		DialingCode: "+44",
-		Number:      "7467623292",
+		DialingCode: "+1",
+		Number:      "555 000 0000",
 	})
 
 	workflow.TriggerCallbackOn(t, wf, fid, runID, StatusOTPSent, ExternalOTP{

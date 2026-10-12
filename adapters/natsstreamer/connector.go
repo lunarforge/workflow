@@ -121,8 +121,15 @@ func (c *connectorConsumer) Recv(ctx context.Context) (*workflow.ConnectorEvent,
 		default:
 		}
 
+		// Next takes no context; stop the iterator on cancellation so Recv
+		// returns and Workflow.Stop can complete (see Receiver.Recv).
+		stopOnCancel := context.AfterFunc(ctx, c.msgs.Stop)
 		msg, err := c.msgs.Next()
+		stopOnCancel()
 		if err != nil {
+			if ctx.Err() != nil {
+				return nil, nil, ctx.Err()
+			}
 			if errors.Is(err, context.Canceled) || errors.Is(err, jetstream.ErrMsgIteratorClosed) {
 				return nil, nil, context.Canceled
 			}

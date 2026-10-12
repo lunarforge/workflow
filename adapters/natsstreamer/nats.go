@@ -105,14 +105,22 @@ func (s *StreamConstructor) NewReceiver(
 		cfg.MaxDeliver = s.opts.maxDeliver
 	}
 
-	// Check if this consumer already exists to handle StreamFromLatest correctly.
-	// StreamFromLatest should only take effect for new consumers with no committed offset.
-	if ropts.StreamFromLatest {
-		_, err := s.js.Consumer(ctx, streamName, consumerName)
-		if errors.Is(err, jetstream.ErrConsumerNotFound) {
+	// A durable consumer that already exists keeps its deliver policy and its
+	// committed offset: JetStream refuses to change DeliverPolicy on update, and
+	// StreamFromLatest must only apply to a consumer with no offset yet.
+	existing, err := s.js.Consumer(ctx, streamName, consumerName)
+	switch {
+	case errors.Is(err, jetstream.ErrConsumerNotFound):
+		if ropts.StreamFromLatest {
 			cfg.DeliverPolicy = jetstream.DeliverNewPolicy
 		}
-		// If consumer exists, keep DeliverAll — the existing offset will be used.
+	case err != nil:
+		return nil, fmt.Errorf("look up consumer %q on stream %q: %w", consumerName, streamName, err)
+	default:
+		prev := existing.CachedInfo().Config
+		cfg.DeliverPolicy = prev.DeliverPolicy
+		cfg.OptStartSeq = prev.OptStartSeq
+		cfg.OptStartTime = prev.OptStartTime
 	}
 
 	consumer, err := s.js.CreateOrUpdateConsumer(ctx, streamName, cfg)
@@ -160,6 +168,13 @@ func (s *StreamConstructor) ensureStream(ctx context.Context, topic string) erro
 	return nil
 }
 
+// eventIDHeader carries the event's id argument from EventSender.Send (the
+// outbox passes the run ID). It must not be "foreign_id": that is
+// workflow.HeaderForeignID, which carries the record's foreign ID and which
+// event filters (Await, filterByForeignID) compare against. Reusing it
+// overwrote the real foreign ID with the run ID, so Await never matched.
+const eventIDHeader = "Workflow-Event-Foreign-Id"
+
 type Sender struct {
 	js    jetstream.JetStream
 	topic string
@@ -177,7 +192,7 @@ func (s *Sender) Send(ctx context.Context, foreignID string, statusType int, hea
 	for key, value := range headers {
 		msg.Header.Set(string(key), value)
 	}
-	msg.Header.Set("foreign_id", foreignID)
+	msg.Header.Set(eventIDHeader, foreignID)
 
 	_, err := s.js.PublishMsg(ctx, msg)
 	return err
@@ -205,8 +220,16 @@ func (r *Receiver) Recv(ctx context.Context) (*workflow.Event, workflow.Ack, err
 		default:
 		}
 
+		// MessagesContext.Next takes no context and blocks until a message
+		// arrives. Stop the iterator when ctx is cancelled so Recv returns and
+		// Workflow.Stop can complete; a cancelled receiver is not reused.
+		stopOnCancel := context.AfterFunc(ctx, r.msgs.Stop)
 		msg, err := r.msgs.Next()
+		stopOnCancel()
 		if err != nil {
+			if ctx.Err() != nil {
+				return nil, nil, ctx.Err()
+			}
 			if errors.Is(err, context.Canceled) || errors.Is(err, jetstream.ErrMsgIteratorClosed) {
 				return nil, nil, context.Canceled
 			}
@@ -240,12 +263,13 @@ func msgToEvent(msg jetstream.Msg) (*workflow.Event, error) {
 
 	headers := make(map[workflow.Header]string)
 	for key, values := range msg.Headers() {
-		if len(values) > 0 {
-			headers[workflow.Header(key)] = values[0]
+		if key == eventIDHeader || len(values) == 0 {
+			continue
 		}
+		headers[workflow.Header(key)] = values[0]
 	}
 
-	foreignID := msg.Headers().Get("foreign_id")
+	foreignID := msg.Headers().Get(eventIDHeader)
 
 	meta, err := msg.Metadata()
 	if err != nil {

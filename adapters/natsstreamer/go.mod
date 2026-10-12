@@ -2,10 +2,8 @@ module github.com/lunarforge/workflow/adapters/natsstreamer
 
 go 1.25.3
 
-replace github.com/lunarforge/workflow => ../..
-
 require (
-	github.com/lunarforge/workflow v0.3.7
+	github.com/lunarforge/workflow v0.4.0
 	github.com/nats-io/nats.go v1.42.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.40.0
